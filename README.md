@@ -1,2 +1,2 @@
 # CUTECAT
-Cybernatic Unarmed (But Terrifying) Exploration and Chassis Aimed Thread
+Cybernatic Unarmed (but Terrifying) Exploration and Chassis Aimed Thread
