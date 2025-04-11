@@ -6,10 +6,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String as1 = "sigma";
-        String bs1 = "sigma";
+        dsu.println(dsu.toString(dsu.getrandom(100, 102)));
 
-        if (dsu.compare(as1, bs1)) {
+        if (dsu.coinflip()) {
             dsu.print("true");
         } else {
             dsu.print("false");
