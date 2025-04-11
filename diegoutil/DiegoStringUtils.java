@@ -2,7 +2,7 @@ package diegoutil;
 
 import java.util.Random;
 
-public class DiegoStringUtils {
+class DiegoStringUtils {
 
     public void print(String input) {
         System.out.print(input);

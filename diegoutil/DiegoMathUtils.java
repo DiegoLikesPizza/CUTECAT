@@ -2,7 +2,7 @@ package diegoutil;
 
 import java.util.Random;
 
-public class DiegoMathUtils {
+class DiegoMathUtils {
 
     public boolean coinflip() {
         Random rand  = new Random();

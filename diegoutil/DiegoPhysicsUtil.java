@@ -1,0 +1,6 @@
+package diegoutil;
+
+class DiegoPhysicsUtil {
+
+
+}
