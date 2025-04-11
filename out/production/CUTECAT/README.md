@@ -1,2 +1,3 @@
 # CUTECAT
-Cybernatic Unarmed (But Terrifying) Exploration and Chassis Aimed Thread
+Cybernatic Unarmed (but Terrifying) Exploration and Chassis Aimed Thread
+###### by Diego, Jakob, Jonathan, Ferdinand, Andreas und Maja
