@@ -1,6 +1,6 @@
 package diegoutil;
 
-class DiegoPhysicsUtil {
+public class DiegoPhysicsUtil {
 
 
 }
