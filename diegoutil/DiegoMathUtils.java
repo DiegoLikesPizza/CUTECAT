@@ -2,21 +2,15 @@ package diegoutil;
 
 import java.util.Random;
 
-class DiegoMathUtils {
+public class DiegoMathUtils {
 
-    public boolean coinflip() {
-        Random rand  = new Random();
-        int x = rand.nextInt(2);
+    private static final Random rand  = new Random();
 
-        if (x == 0) {
-            return true;
-        } else {
-            return false;
-        }
+    public static boolean coinflip() {
+        return rand.nextBoolean();
     }
 
-    public int getrandom(int min, int max) {
-        Random rand = new Random();
+    public static int getRandom(int min, int max) {
         return rand.nextInt((max - min) + 1) + min;
     }
 }
