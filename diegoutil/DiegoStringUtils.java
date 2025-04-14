@@ -30,19 +30,19 @@ public class DiegoStringUtils {
         return CharA == CharB;
     }
 
-    public static String toString(int x) {
+    public static String ToString(int x) {
         return String.valueOf(x);
     }
-    public static String toString(double x) {
+    public static String ToString(double x) {
         return String.valueOf(x);
     }
-    public static String toString(boolean x) {
+    public static String ToString(boolean x) {
         return String.valueOf(x);
     }
-    public static String toString(char x) {
+    public static String ToString(char x) {
         return String.valueOf(x);
     }
-    public static String toString(float x) {
+    public static String ToString(float x) {
         return String.valueOf(x);
     }
 }
