@@ -1,4 +1,4 @@
-package diegoutil;
+package com.CUTECAT.diegoutil;
 
 import java.util.Random;
 
