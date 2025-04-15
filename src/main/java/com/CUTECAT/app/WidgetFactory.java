@@ -9,6 +9,22 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class WidgetFactory {
     public static void addWidgets(GridPane parent) {
+
+        // input params
+        VBox inputparams = createSection("Input parameters");
+
+        // Inputs
+        TextField weight = new TextField();
+        weight.setPromptText("0.05");
+        weight.getStyleClass().add("styled-text-field");
+
+        inputparams.getChildren().add(weight);
+
+
+        parent.add(inputparams, 0, 0);
+
+        /*
+
         // Input Controls Section
         VBox inputControls = createSection("Input Controls");
         
@@ -127,10 +143,11 @@ public class WidgetFactory {
 
         // Add all sections to the grid
         parent.add(inputControls, 0, 0);
-        parent.add(selectionControls, 1, 0);
+        parent.add(selectionControls, 1, 1);
         parent.add(progressControls, 0, 1);
         parent.add(containerExamples, 1, 1);
         parent.add(statusSection, 0, 2, 2, 1); // Span 2 columns
+        */
     }
 
     private static VBox createSection(String title) {
