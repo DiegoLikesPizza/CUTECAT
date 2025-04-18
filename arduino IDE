@@ -1,0 +1,46 @@
+#include <WiFi.h>                   // Mbed‑basierte WLAN‑API
+const char* ssid = "FRITZ!Box 7590 CZ";
+const char* password = "55593725082290737586";
+WiFiServer server(1234);            // TCP-Port 1234
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);       // WLAN‑Verbindung starten :contentReference[oaicite:4]{index=4}
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConnected");
+  Serial.print("IP: ");
+  Serial.println(WiFi.localIP());   // IP ausgeben :contentReference[oaicite:5]{index=5}
+  server.begin();                   // Server starten :contentReference[oaicite:6]{index=6}
+}
+
+void loop() {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Verbindung verloren. Versuche erneut...");
+    WiFi.disconnect();
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+      delay(1000);
+      Serial.println("Versuche, mit dem WLAN zu verbinden...");
+    }
+    Serial.println("Wieder mit dem WLAN verbunden!");
+  }
+  WiFiClient client = server.available(); // Warten auf Client :contentReference[oaicite:7]{index=7}
+  if (client) {
+    Serial.println("Client connected");
+    while (client.connected()) {
+      if (client.available()) {
+        String cmd = client.readStringUntil('\n'); // Zeilenbasiert lesen :contentReference[oaicite:8]{index=8}
+        Serial.print("Received: ");
+        Serial.println(cmd);
+        // Echo zurück
+        client.print("Ack: ");
+        client.println(cmd);
+      }
+    }
+    client.stop();
+    Serial.println("Client disconnected");
+  }
+}
