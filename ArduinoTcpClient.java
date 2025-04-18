@@ -10,6 +10,7 @@ public class ArduinoTcpClient {
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out.println("Hello");
             while (true) {
                 Scanner sc = new Scanner(System.in);
                 String command = sc.nextLine();
@@ -17,7 +18,7 @@ public class ArduinoTcpClient {
                 out.print(command);
                 out.flush();
                 String response = in.readLine();
-                System.out.println("Antwort: " + response);
+                System.out.println(response);
             }
         } catch (IOException e) {
             e.printStackTrace();
