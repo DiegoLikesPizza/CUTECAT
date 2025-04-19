@@ -2,9 +2,9 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-public class ArduinoTcpClient {
+public class ErsterWIFIClient {
     public static void main(String[] args) {
-        String host = "192.168.178.180";
+        String host = "192.168.178.180"; //IP vom Arduino GIGA
         int port = 1234;
         try (Socket socket = new Socket(host, port)) {
             BufferedReader in = new BufferedReader(
