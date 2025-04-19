@@ -1,0 +1,72 @@
+#include <WiFi.h>
+
+const char* ssid = "FRITZ!Box 7590 CZ";
+const char* password = "55593725082290737586";
+
+WiFiServer server1(80);  // HTTP-Server für Messwerte
+WiFiServer server2(81);  // TCP-Server für Befehle
+WiFiClient client1;
+WiFiClient client2;
+
+void setup() {
+  Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    WiFi.disconnect();
+    Serial.println("WLAN Connect Versuch fehlgeschlagen");
+    WiFi.begin(ssid, password);
+    delay(2000);
+  }
+
+  Serial.println("WLAN verbunden!");
+  Serial.print("IP-Adresse: ");
+  Serial.println(WiFi.localIP());
+
+  server1.begin(); // HTTP-Server starten
+  server2.begin(); // TCP-Server starten
+}
+
+void loop() {
+  // 1. HTTP-Server: Java holt Messwerte
+  client1 = server1.available();
+  if (client1) {
+    Serial.println("HTTP-Anfrage erhalten!");
+    String req = client1.readStringUntil('\r');
+    Serial.print("HTTP Anfrage: ");
+    Serial.println(req);
+    client1.flush();
+
+    if (req.indexOf("GET /messwerte") >= 0) {
+      // Richtige Anfrage: Messwerte liefern
+      String response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n";
+      response += "23,45";  // Beispielwerte (CSV)
+      client1.print(response);
+    } else {
+      // Andere Anfrage: 404
+      String response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n";
+      response += "Pfad nicht gefunden";
+      client1.print(response);
+    }
+
+    client1.stop();
+  }
+
+  // 2. TCP-Server: Java sendet Befehle
+  if (!client2 || !client2.connected()) {
+    client2 = server2.available();
+  }
+
+  if (client2 && client2.connected()) {
+    if (client2.available()) {
+      String command = client2.readStringUntil('\n');
+      command.trim();
+      Serial.print("Empfangen von Java (TCP): ");
+      Serial.println(command);
+
+      client2.println("Arduino Antwort: " + command);
+    }
+  }
+
+  //delay(50); // ganz kleine Pause (für stabilere Kommunikation)
+}

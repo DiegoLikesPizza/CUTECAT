@@ -1,0 +1,7 @@
+Pläne/ Infos zur Schnittstelle Arduino-Java
+
+- Mit WIFI; TCP-Protokoll
+- Alle Daten werden zu Integer umgeformt
+- Übergabe von Daten von Java zu Arduino in CSV (Comma-Seperated-Values), diese können aus z. B. einer ArrayList stammen
+- Übergabe von Daten von Arduino zu Java in HTTP (Hypertext Transfer Protokoll), v. a. weil die Kamera besser auf HTTP un parallel zum Rest laufen muss. Die Daten können anschließend auch umgeformt werden.
+- Eine beidseitige Übertragung (mit Bestätigung) dauert ca. 125ms, d. h. Übertragung von ca. 8Hz, kann noch verbessert werden
