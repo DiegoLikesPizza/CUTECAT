@@ -5,3 +5,6 @@ Pläne/ Infos zur Schnittstelle Arduino-Java
 - Übergabe von Daten von Java zu Arduino in CSV (Comma-Seperated-Values), diese können aus z. B. einer ArrayList stammen
 - Übergabe von Daten von Arduino zu Java in HTTP (Hypertext Transfer Protokoll), v. a. weil die Kamera besser auf HTTP un parallel zum Rest laufen muss. Die Daten können anschließend auch umgeformt werden.
 - Eine beidseitige Übertragung (mit Bestätigung) dauert ca. 125ms, d. h. Übertragung von ca. 8Hz, kann noch verbessert werden
+- Der Command-Datensatz könnte so aussehen {motor1, speed1, motor2, speed2, motor3, speed3, motor4, speed4}
+  wobei für motori möglich ist: 1-> forward; 2-> backward; 3-> OFF;
+  wobei für speedi möglich ist: 0 - 255; von 0 (aus) über 1 (vmin) bis 255 (vmax)
