@@ -1,16 +1,174 @@
 #include <WiFi.h>
 
+//WIFI-Connection
 const char* ssid = "FRITZ!Box 7590 CZ";
 const char* password = "55593725082290737586";
-
 WiFiServer server1(80);  // HTTP-Server für Messwerte
 WiFiServer server2(81);  // TCP-Server für Befehle
 WiFiClient client1;
 WiFiClient client2;
 
+//I/O-Pins
+int forward1pin = 43, backward1pin = 41, forward2pin = 39, backward2pin = 37;
+int speed1pin   = 3,  speed2pin    = 4;
+int forward3pin = 53, backward3pin = 51, forward4pin = 49, backward4pin = 47;
+int speed3pin   = 5,  speed4pin    = 6;
+int ventiltransistorpin = 25;
+int wifiledpin          = 45;
+
+//Zustände
+int motor1, speed1, motor2, speed2, motor3, speed3, motor4, speed4;
+
+//Commands
+int newmotor1, newspeed1, newmotor2, newspeed2, newmotor3, newspeed3, newmotor4, newspeed4;
+
+//DATA-Splitting
+void parseCSV(String data) {
+  int firstComma = data.indexOf(',');
+  int secondComma = data.indexOf(',', firstComma + 1);
+  int thirdComma = data.indexOf(',', secondComma + 1);
+  int fourthComma = data.indexOf(',', thirdComma + 1);
+  int fifthComma = data.indexOf(',', fourthComma + 1);
+  int sixthComma = data.indexOf(',', fifthComma + 1);
+  int seventhComma = data.indexOf(',', sixthComma + 1);
+  newmotor1 = data.substring(0, firstComma).toInt();
+  newspeed1 = data.substring(firstComma + 1, secondComma).toInt();
+  newmotor2 = data.substring(secondComma + 1, thirdComma).toInt();
+  newspeed2 = data.substring(thirdComma + 1, fourthComma).toInt();
+  newmotor3 = data.substring(fourthComma + 1, fifthComma).toInt();
+  newspeed3 = data.substring(fifthComma + 1, sixthComma).toInt();
+  newmotor4 = data.substring(sixthComma + 1, seventhComma).toInt();
+  newspeed4 = data.substring(seventhComma + 1).toInt();
+  Serial.print("Motor1: "); Serial.println(newmotor1);
+  Serial.print("Speed1: "); Serial.println(newspeed1);
+  Serial.print("Motor2: "); Serial.println(newmotor2);
+  Serial.print("Speed2: "); Serial.println(newspeed2);
+  Serial.print("Motor3: "); Serial.println(newmotor3);
+  Serial.print("Speed3: "); Serial.println(newspeed3);
+  Serial.print("Motor4: "); Serial.println(newmotor4);
+  Serial.print("Speed4: "); Serial.println(newspeed4);
+}
+
+
+//Steuerung der I/O-Pins
+void setmotor1(int data){
+  if (data == 1){
+  digitalWrite(forward1pin, HIGH);
+  digitalWrite(backward1pin, LOW);
+  }
+  else if (data == 2){
+  digitalWrite(forward1pin, LOW);
+  digitalWrite(backward1pin, HIGH);
+  }
+  else{
+  digitalWrite(forward1pin, LOW);
+  digitalWrite(backward1pin, LOW);
+  }
+}
+void setmotor2(int data){
+  if (data == 1){
+  digitalWrite(forward2pin, HIGH);
+  digitalWrite(backward2pin, LOW);
+  }
+  else if (data == 2){
+  digitalWrite(forward2pin, LOW);
+  digitalWrite(backward2pin, HIGH);
+  }
+  else{
+  digitalWrite(forward2pin, LOW);
+  digitalWrite(backward2pin, LOW);
+  }
+}
+void setmotor3(int data){
+  if (data == 1){
+  digitalWrite(forward3pin, HIGH);
+  digitalWrite(backward3pin, LOW);
+  }
+  else if (data == 2){
+  digitalWrite(forward3pin, LOW);
+  digitalWrite(backward3pin, HIGH);
+  }
+  else{
+  digitalWrite(forward3pin, LOW);
+  digitalWrite(backward3pin, LOW);
+  }
+}
+void setmotor4(int data){
+  if (data == 1){
+  digitalWrite(forward4pin, HIGH);
+  digitalWrite(backward4pin, LOW);
+  }
+  else if (data == 2){
+  digitalWrite(forward4pin, LOW);
+  digitalWrite(backward4pin, HIGH);
+  }
+  else{
+  digitalWrite(forward4pin, LOW);
+  digitalWrite(backward4pin, LOW);
+  }
+}
+//VariablenDifferenz
+void checknewData(){
+  if (motor1 != newmotor1){
+    setmotor1(newmotor1);
+    motor1 = newmotor1;
+  }
+  if (motor2 != newmotor2){
+    setmotor2(newmotor2);
+    motor2 = newmotor2;
+  }
+  if (motor3 != newmotor3){
+    setmotor3(newmotor3);
+    motor3 = newmotor3;
+  }
+  if (motor4 != newmotor4){
+    setmotor4(newmotor4);
+    motor4 = newmotor4;
+  }
+  if (speed1 != newspeed1){
+    analogWrite(speed1pin, newspeed1);
+    speed1 = newspeed1;
+  }
+  if (speed2 != newspeed2){
+    analogWrite(speed2pin, newspeed2);
+    speed2 = newspeed2;
+  }
+  if (speed3 != newspeed3){
+    analogWrite(speed3pin, newspeed3);
+    speed3 = newspeed3;
+  }
+  if (speed4 != newspeed4){
+    analogWrite(speed4pin, newspeed4);
+    speed4 = newspeed4;
+  }
+}
+// Funktions‑Dispatcher
+/*struct CommandHandler {
+  const char* command;
+  void (*handler)();
+};
+
+CommandHandler commands[] = {
+  {"1", handle1},
+  {"2", handle2},
+  {"3", handle3},
+  {"4", handle4},
+};
+
+void handleCommand(const String &cmd) {
+  for (auto &c : commands) {
+    if (cmd.equals(c.command)) {
+      c.handler();
+      return;
+    }
+  }
+  client.println("Unknown command");
+}
+*/
+
 void setup() {
   Serial.begin(115200);
-
+  //WIFI
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     WiFi.disconnect();
@@ -18,13 +176,20 @@ void setup() {
     WiFi.begin(ssid, password);
     delay(2000);
   }
-
   Serial.println("WLAN verbunden!");
   Serial.print("IP-Adresse: ");
   Serial.println(WiFi.localIP());
-
   server1.begin(); // HTTP-Server starten
   server2.begin(); // TCP-Server starten
+  //Variablen
+  motor1 = 0;
+  speed1 = 0;
+  motor2 = 0;
+  speed2 = 0;
+  motor3 = 0;
+  speed3 = 0;
+  motor4 = 0;
+  speed4 = 0;
 }
 
 void loop() {
@@ -40,7 +205,7 @@ void loop() {
     if (req.indexOf("GET /messwerte") >= 0) {
       // Richtige Anfrage: Messwerte liefern
       String response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n";
-      response += "23,45";  // Beispielwerte (CSV)
+      response += "150,180,0,180";  // Beispielwerte (CSV)
       client1.print(response);
     } else {
       // Andere Anfrage: 404
@@ -61,9 +226,8 @@ void loop() {
     if (client2.available()) {
       String command = client2.readStringUntil('\n');
       command.trim();
-      Serial.print("Empfangen von Java (TCP): ");
-      Serial.println(command);
-
+      parseCSV(command);
+      checknewData();
       client2.println("Arduino Antwort: " + command);
     }
   }
