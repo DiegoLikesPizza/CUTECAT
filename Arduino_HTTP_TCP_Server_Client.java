@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Arduino_HTTP_TCP_Server_Client {
@@ -19,6 +20,7 @@ public class Arduino_HTTP_TCP_Server_Client {
                     while ((line = in.readLine()) != null) {
                         System.out.println("Messwerte vom Arduino: " + line);
                     }
+                    //Thread.sleep(2000);
                     in.close();
                 } catch (Exception e) {
                     System.err.println("Fehler beim Abrufen der Messwerte: " + e.getMessage());
@@ -35,15 +37,32 @@ public class Arduino_HTTP_TCP_Server_Client {
                     Scanner scanner = new Scanner(System.in);
             ) {
                 while (true) {
-                    String command = "abc";
-                    out.println(command);
+                    RandomCommandCreator randomCommandCreator = new RandomCommandCreator();
+                    //Hier muss die ArrayList commands mit "richtigen" Daten gefüllt werden
+                    ArrayList<Integer> commands = randomCommandCreator.createCommands();
+                    String csv = toCsv(commands);
+                    System.out.println("Sende CSV: " + csv);
+                    out.println(csv);
 
                     String response = in.readLine();
                     System.out.println("Antwort vom Arduino: " + response);
+                    //Thread.sleep(2000);
                 }
             } catch (Exception e) {
                 System.err.println("Fehler beim Senden an Arduino: " + e.getMessage());
             }
         }).start();
     }
+
+    private static String toCsv(ArrayList<Integer> list) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i));
+            if (i < list.size() - 1) {
+                sb.append(',');
+            }
+        }
+        return sb.toString();
+    }
 }
+
