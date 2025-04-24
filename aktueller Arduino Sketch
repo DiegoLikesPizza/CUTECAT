@@ -15,12 +15,15 @@ int forward3pin = 53, backward3pin = 51, forward4pin = 49, backward4pin = 47;
 int speed3pin   = 5,  speed4pin    = 6;
 int ventiltransistorpin = 25;
 int wifiledpin          = 45;
+const int lenkservopin = 8;
+const int turmservopin = 9;
+const int laufservopin = 10;
 
 //Zustände
-int motor1, speed1, motor2, speed2, motor3, speed3, motor4, speed4;
+int motor1, speed1, motor2, speed2, motor3, speed3, motor4, speed4, lenkservo, turmservo, laufservo;
 
 //Commands
-int newmotor1, newspeed1, newmotor2, newspeed2, newmotor3, newspeed3, newmotor4, newspeed4;
+int newmotor1, newspeed1, newmotor2, newspeed2, newmotor3, newspeed3, newmotor4, newspeed4, newlenkservo, newturmservo, newlaufservo;
 
 //DATA-Splitting
 void parseCSV(String data) {
@@ -31,6 +34,9 @@ void parseCSV(String data) {
   int fifthComma = data.indexOf(',', fourthComma + 1);
   int sixthComma = data.indexOf(',', fifthComma + 1);
   int seventhComma = data.indexOf(',', sixthComma + 1);
+  int eighthComma = data.indexOf(',', seventhComma + 1);
+  int ninthComma = data.indexOf(',', eighthComma + 1);
+  int tenthComma = data.indexOf(',', ninthComma + 1);
   newmotor1 = data.substring(0, firstComma).toInt();
   newspeed1 = data.substring(firstComma + 1, secondComma).toInt();
   newmotor2 = data.substring(secondComma + 1, thirdComma).toInt();
@@ -38,17 +44,14 @@ void parseCSV(String data) {
   newmotor3 = data.substring(fourthComma + 1, fifthComma).toInt();
   newspeed3 = data.substring(fifthComma + 1, sixthComma).toInt();
   newmotor4 = data.substring(sixthComma + 1, seventhComma).toInt();
-  newspeed4 = data.substring(seventhComma + 1).toInt();
-  Serial.print("Motor1: "); Serial.println(newmotor1);
-  Serial.print("Speed1: "); Serial.println(newspeed1);
-  Serial.print("Motor2: "); Serial.println(newmotor2);
-  Serial.print("Speed2: "); Serial.println(newspeed2);
-  Serial.print("Motor3: "); Serial.println(newmotor3);
-  Serial.print("Speed3: "); Serial.println(newspeed3);
-  Serial.print("Motor4: "); Serial.println(newmotor4);
-  Serial.print("Speed4: "); Serial.println(newspeed4);
+  newspeed4 = data.substring(seventhComma + 1, eighthComma).toInt();
+  newlenkservo = data.substring(eighthComma + 1, ninthComma).toInt();
+  newturmservo = data.substring(ninthComma + 1, tenthComma).toInt();
+  newlaufservo = data.substring(tenthComma + 1).toInt();
+  Serial.print("lenkservo: "); Serial.println(newlenkservo);
+  Serial.print("turmservo: "); Serial.println(newturmservo);
+  Serial.print("laufservo: "); Serial.println(newlaufservo);
 }
-
 
 //Steuerung der I/O-Pins
 void setmotor1(int data){
@@ -107,6 +110,37 @@ void setmotor4(int data){
   digitalWrite(backward4pin, LOW);
   }
 }
+// Wandelt Winkel in Pulsbreite 500–2500 µs um
+int angleToPulse(int angle) {
+  return map(angle, 0, 180, 500, 2500);
+}
+void writelenkservo(int angle) {
+  int pw = angleToPulse(angle);
+  for (int i = 0; i < 50; ++i) {          // 50 × 20 ms = 1 s Fahrtzeit
+    digitalWrite(lenkservopin, HIGH);
+    delayMicroseconds(pw);
+    digitalWrite(lenkservopin, LOW);
+    delayMicroseconds(20000 - pw);
+  }
+}
+void writeturmservo(int angle) {
+  int pw = angleToPulse(angle);
+  for (int i = 0; i < 50; ++i) {          // 50 × 20 ms = 1 s Fahrtzeit
+    digitalWrite(turmservopin, HIGH);
+    delayMicroseconds(pw);
+    digitalWrite(turmservopin, LOW);
+    delayMicroseconds(20000 - pw);
+  }
+}
+void writelaufservo(int angle) {
+  int pw = angleToPulse(angle);
+  for (int i = 0; i < 50; ++i) {          // 50 × 20 ms = 1 s Fahrtzeit
+    digitalWrite(laufservopin, HIGH);
+    delayMicroseconds(pw);
+    digitalWrite(laufservopin, LOW);
+    delayMicroseconds(20000 - pw);
+  }
+}
 //VariablenDifferenz
 void checknewData(){
   if (motor1 != newmotor1){
@@ -140,6 +174,18 @@ void checknewData(){
   if (speed4 != newspeed4){
     analogWrite(speed4pin, newspeed4);
     speed4 = newspeed4;
+  }
+  if (lenkservo != newlenkservo){
+    writelenkservo(newlenkservo);
+    lenkservo = newlenkservo;
+  }
+  if (turmservo != newturmservo){
+    writeturmservo(newturmservo);
+    turmservo = newturmservo;
+  }
+  if (laufservo != newlaufservo){
+    writelaufservo(newlaufservo);
+    laufservo = newlaufservo;
   }
 }
 // Funktions‑Dispatcher
@@ -190,16 +236,19 @@ void setup() {
   speed3 = 0;
   motor4 = 0;
   speed4 = 0;
+  lenkservo= 0;
+  turmservo= 0;
+  laufservo= 0;
+  pinMode(lenkservopin, OUTPUT);
+  pinMode(turmservopin, OUTPUT);
+  pinMode(laufservopin, OUTPUT);
 }
 
 void loop() {
   // 1. HTTP-Server: Java holt Messwerte
   client1 = server1.available();
   if (client1) {
-    Serial.println("HTTP-Anfrage erhalten!");
     String req = client1.readStringUntil('\r');
-    Serial.print("HTTP Anfrage: ");
-    Serial.println(req);
     client1.flush();
 
     if (req.indexOf("GET /messwerte") >= 0) {
@@ -213,7 +262,6 @@ void loop() {
       response += "Pfad nicht gefunden";
       client1.print(response);
     }
-
     client1.stop();
   }
 
@@ -221,16 +269,13 @@ void loop() {
   if (!client2 || !client2.connected()) {
     client2 = server2.available();
   }
-
   if (client2 && client2.connected()) {
     if (client2.available()) {
       String command = client2.readStringUntil('\n');
       command.trim();
       parseCSV(command);
       checknewData();
-      client2.println("Arduino Antwort: " + command);
+      Serial.print("Fertig");
     }
   }
-
-  //delay(50); // ganz kleine Pause (für stabilere Kommunikation)
 }

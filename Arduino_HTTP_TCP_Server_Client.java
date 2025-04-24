@@ -3,6 +3,7 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.*;
 
 public class Arduino_HTTP_TCP_Server_Client {
     public static void main(String[] args) {
@@ -19,9 +20,9 @@ public class Arduino_HTTP_TCP_Server_Client {
                     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line;
                     while ((line = in.readLine()) != null) {
-                        System.out.println("Messwerte vom Arduino: " + line);
+                        //System.out.println("Messwerte vom Arduino: " + line);
                     }
-                    Thread.sleep(2000);
+                    //Thread.sleep(2000);
                     in.close();
                 } catch (Exception e) {
                     System.err.println("Fehler beim Abrufen der Messwerte: " + e.getMessage());
@@ -43,12 +44,12 @@ public class Arduino_HTTP_TCP_Server_Client {
                     int choose = scanner.nextInt();
                     ArrayList<Integer> commands = randomCommandCreator.createrandomCommands(choose);
                     String csv = toCsv(commands);
-                    System.out.println("Sende CSV: " + csv);
+                    //System.out.println("Sende CSV: " + csv);
                     out.println(csv);
 
-                    String response = in.readLine();
-                    System.out.println("Antwort vom Arduino: " + response);
-                    Thread.sleep(3000);
+                    //String response = in.readLine();
+                    //System.out.println("Antwort vom Arduino: " + response);
+                    //Thread.sleep(3000);
                 }
             } catch (Exception e) {
                 System.err.println("Fehler beim Senden an Arduino: " + e.getMessage());
