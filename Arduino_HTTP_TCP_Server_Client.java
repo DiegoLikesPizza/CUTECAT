@@ -20,9 +20,8 @@ public class Arduino_HTTP_TCP_Server_Client {
                     BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line;
                     while ((line = in.readLine()) != null) {
-                        //System.out.println("Messwerte vom Arduino: " + line);
+                        System.out.println("Messwerte vom Arduino: " + line);
                     }
-                    //Thread.sleep(2000);
                     in.close();
                 } catch (Exception e) {
                     System.err.println("Fehler beim Abrufen der Messwerte: " + e.getMessage());
