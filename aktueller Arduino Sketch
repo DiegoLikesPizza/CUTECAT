@@ -9,15 +9,17 @@ WiFiClient client1;
 WiFiClient client2;
 
 //I/O-Pins
-int forward1pin = 43, backward1pin = 41, forward2pin = 39, backward2pin = 37;
-int speed1pin   = 3,  speed2pin    = 4;
-int forward3pin = 53, backward3pin = 51, forward4pin = 49, backward4pin = 47;
-int speed3pin   = 5,  speed4pin    = 6;
-int ventiltransistorpin = 25;
-int wifiledpin          = 45;
+const int forward1pin = 43, backward1pin = 41, forward2pin = 39, backward2pin = 37;
+const int speed1pin   = 3,  speed2pin    = 4;
+const int forward3pin = 53, backward3pin = 51, forward4pin = 49, backward4pin = 47;
+const int speed3pin   = 5,  speed4pin    = 6;
+const int ventiltransistorpin = 25;
+const int wifiledpin          = 45;
 const int lenkservopin = 8;
 const int turmservopin = 9;
 const int laufservopin = 10;
+const int ultratriggerpin = 13;
+const int ultraechopin = 12;
 
 //Zustände
 int motor1, speed1, motor2, speed2, motor3, speed3, motor4, speed4, lenkservo, turmservo, laufservo;
@@ -48,9 +50,11 @@ void parseCSV(String data) {
   newlenkservo = data.substring(eighthComma + 1, ninthComma).toInt();
   newturmservo = data.substring(ninthComma + 1, tenthComma).toInt();
   newlaufservo = data.substring(tenthComma + 1).toInt();
-  Serial.print("lenkservo: "); Serial.println(newlenkservo);
-  Serial.print("turmservo: "); Serial.println(newturmservo);
-  Serial.print("laufservo: "); Serial.println(newlaufservo);
+}
+
+//Ultraschallsensor
+long mikrosekundenzucm(long dauer){
+  return dauer / 29 / 2;
 }
 
 //Steuerung der I/O-Pins
@@ -213,20 +217,6 @@ void handleCommand(const String &cmd) {
 */
 
 void setup() {
-  Serial.begin(115200);
-  //WIFI
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    WiFi.disconnect();
-    Serial.println("WLAN Connect Versuch fehlgeschlagen");
-    WiFi.begin(ssid, password);
-    delay(2000);
-  }
-  Serial.println("WLAN verbunden!");
-  Serial.print("IP-Adresse: ");
-  Serial.println(WiFi.localIP());
-  server1.begin(); // HTTP-Server starten
-  server2.begin(); // TCP-Server starten
   //Variablen
   motor1 = 0;
   speed1 = 0;
@@ -242,9 +232,41 @@ void setup() {
   pinMode(lenkservopin, OUTPUT);
   pinMode(turmservopin, OUTPUT);
   pinMode(laufservopin, OUTPUT);
+  pinMode(wifiledpin, OUTPUT);
+  pinMode(ultratriggerpin, OUTPUT);
+  pinMode(ultraechopin, INPUT);
+  //Konsole
+  Serial.begin(115200);
+  //WIFI
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    WiFi.disconnect();
+    Serial.println("WLAN Connect Versuch fehlgeschlagen");
+    WiFi.begin(ssid, password);
+    delay(2000);
+  }
+  Serial.println("WLAN verbunden!");
+  Serial.print("IP-Adresse: ");
+  Serial.println(WiFi.localIP());
+  server1.begin(); // HTTP-Server starten
+  server2.begin(); // TCP-Server starten
+  digitalWrite(wifiledpin, HIGH);
+
 }
 
 void loop() {
+  //Messwerte Ultraschallsensor
+  long ultradauer, longultraabstand;
+  String ultraabstand;
+  pinMode(ultratriggerpin, LOW);
+  delayMicroseconds(2);
+  pinMode(ultratriggerpin, HIGH);
+  delayMicroseconds(10);
+  pinMode(ultratriggerpin, LOW);
+  ultradauer = pulseIn(ultraechopin, HIGH);
+  longultraabstand = mikrosekundenzucm(ultradauer);
+  ultraabstand = String(longultraabstand);
+
   // 1. HTTP-Server: Java holt Messwerte
   client1 = server1.available();
   if (client1) {
@@ -254,7 +276,7 @@ void loop() {
     if (req.indexOf("GET /messwerte") >= 0) {
       // Richtige Anfrage: Messwerte liefern
       String response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n";
-      response += "150,180,0,180";  // Beispielwerte (CSV)
+      response += ultraabstand;  // Beispielwerte (CSV)
       client1.print(response);
     } else {
       // Andere Anfrage: 404
@@ -275,7 +297,7 @@ void loop() {
       command.trim();
       parseCSV(command);
       checknewData();
-      Serial.print("Fertig");
     }
   }
+  delay(100);
 }
