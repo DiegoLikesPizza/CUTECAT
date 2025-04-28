@@ -10,7 +10,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 public class WidgetFactory {
     public static void addWidgets(GridPane parent) {
 
-        // Input Controls Section
+        // Input Controls Section 1
         VBox inputControls = createSection("Input Controls");
         
         // Text input
