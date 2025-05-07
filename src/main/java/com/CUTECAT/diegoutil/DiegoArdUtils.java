@@ -2,6 +2,7 @@ package com.CUTECAT.diegoutil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import static com.CUTECAT.diegoutil.DiegoMathUtils.*;
 
 public class DiegoArdUtils extends Thread{
 
@@ -13,9 +14,11 @@ public class DiegoArdUtils extends Thread{
 
     private static int drivefront = 1;
     private static int speed = 100;
-    private static int drivedirection = 0;
+    private static int driveyaw = 0;
     private static int headYaw = 0;
     private static int headPitch = 0;
+    private static int SensorsYaw = 0;
+    private static int SensorsPitch = 0;
 
     public void run() {
 
@@ -23,12 +26,12 @@ public class DiegoArdUtils extends Thread{
 
             ArdMap.put("Motor dir", drivefront);
             ArdMap.put("Motor speed", speed);
-            ArdMap.put("steer", drivedirection);  // Lenkservo
-            ArdMap.put("steer2", headYaw);  // Turmservo horizontal
-            ArdMap.put("steer3", headPitch); // Laufservo vertikal
-            ArdMap.put("cam", null);                    // TODO
-            ArdMap.put("ultraschall", null);            // TODO
-            ArdMap.put("Schrittmotor", null);           // TODO
+            ArdMap.put("steer", driveyaw);          // Lenkservo
+            ArdMap.put("HYaw", headYaw);            // Turmservo horizontal
+            ArdMap.put("HPitch", headPitch);        // Laufservo vertikal
+            ArdMap.put("SYaw", SensorsYaw);         // Kamera und Ultraschall Yaw
+            ArdMap.put("SPitch", SensorsPitch);     // Kamera und Ultraschall Pitch
+            ArdMap.put("Schrittmotor", null);       // TODO
 
             ArdCues.clear();
 
@@ -41,14 +44,14 @@ public class DiegoArdUtils extends Thread{
             ArdCues.add(ArdMap.get("Motor dir"));       // Motor 4
             ArdCues.add(ArdMap.get("Motor speed"));
             ArdCues.add(ArdMap.get("steer"));           // Lenkservo
-            ArdCues.add(ArdMap.get("steer2"));          // Kopfservo Breite
-            ArdCues.add(ArdMap.get("steer3"));          // Kopfservo Höhe
-            ArdCues.add(ArdMap.get("cam"));             // TODO: Servo für Kamera
-            ArdCues.add(ArdMap.get("ultraschall"));     // TODO: Servo für Ultraschall Sensor
+            ArdCues.add(ArdMap.get("HYaw"));            // Kopfservo Breite
+            ArdCues.add(ArdMap.get("HPitch"));          // Kopfservo Höhe
+            ArdCues.add(ArdMap.get("SYaw"));            // Kamera und Ultraschall Yaw
+            ArdCues.add(ArdMap.get("SPitch"));          // Kamera und Ultraschall Pitch
             ArdCues.add(ArdMap.get("Schrittmotor"));    // TODO: Schrittmotor
 
             try {
-                sleep(100);
+                sleep(10);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -65,43 +68,43 @@ public class DiegoArdUtils extends Thread{
     }
 
     public void setSpeed(int newSpeed) throws Exception {
-        if(speed < 0){
-            throw new Exception("Speed too low. Must be more than 0");
+        if(isBetween(0, 255, newSpeed)){
+            speed = newSpeed;
+        } else {
+            throw new Exception("invalid speed input");
         }
-        if (speed > 255) {
-            throw new Exception("Speed too low. Must be less than 256");
-        }
-        speed = newSpeed;
     }
 
     public void setDriveYaw(int yaw) throws Exception {
-        if(yaw < -90){
-            throw new Exception("Yaw too low. Must be greater than -90");
+        if(isBetween(-90, 90, yaw)){
+            driveyaw = yaw;
+        } else {
+            throw new Exception("invalid yaw input");
         }
-        if (yaw > 90) {
-            throw new Exception("Yaw too high. Must be less than 90");
-        }
-        drivedirection = yaw;
     }
 
-    public void setHeadYaw(int yaw) throws Exception {
-        if(yaw < -90){
-            throw new Exception("Yaw too low. Must be greater than -90");
+
+
+    public void setHeadView(int yaw, int pitch) throws Exception {
+        if(!isBetween(-90, 90, yaw)) {
+            throw new Exception("invalid yaw input");
         }
-        if (yaw > 90) {
-            throw new Exception("Yaw too high. Must be less than 90");
+        if(!isBetween(4, 85, pitch)) {
+            throw new Exception("invalid pitch input");
         }
         headYaw = yaw;
+        headPitch = pitch;
     }
 
-    public void setHeadPitch(int pitch) throws Exception {
-        if(pitch < 3){
-            throw new Exception("Pitch too low. Must be greater than 3");
+    public void setSensorsView(int yaw, int pitch) throws Exception {
+        if(!isBetween(-90, 90, yaw)) {
+            throw new Exception("invalid yaw input");
         }
-        if (pitch > 85) {
-            throw new Exception("Pitch too high. Must be less than 85");
+        if(!isBetween(4, 85, pitch)) {
+            throw new Exception("invalid pitch input");
         }
-        headPitch = pitch;
+        SensorsYaw = yaw;
+        SensorsPitch = pitch;
     }
 
     public void startControl() {
