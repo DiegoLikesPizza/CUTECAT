@@ -13,4 +13,8 @@ public class DiegoMathUtils {
     public static int getRandom(int min, int max) {
         return rand.nextInt((max - min) + 1) + min;
     }
+
+    public static boolean isBetween(int min, int max, int value) {
+        return value >= min && value <= max;
+    }
 }
