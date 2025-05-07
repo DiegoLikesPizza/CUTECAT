@@ -1,5 +1,6 @@
 package com.CUTECAT.app;
 
+import com.CUTECAT.GUI.AndreasGUI;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -35,13 +36,13 @@ public class CUTECAT extends Application {
         content.getStyleClass().add("content-area");
         
         // Add widgets
-        WidgetFactory.addWidgets(content);
+        AndreasGUI.addWidgets(content);
 
         // Add components to root
         root.getChildren().addAll(titleBar, content);
 
         // Create scene
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root,300,300);
         scene.setFill(Color.TRANSPARENT);
         scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
 
@@ -49,6 +50,10 @@ public class CUTECAT extends Application {
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setScene(scene);
         primaryStage.setTitle("CUTECAT");
+        //primaryStage.setFullScreen(true);
+        primaryStage.setHeight(1050);
+        primaryStage.setWidth(1950);
+        //primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
         
         // Apply rounded corners
         setRoundedCorners(root, 10, 10);
@@ -72,4 +77,6 @@ public class CUTECAT extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+
 }
