@@ -19,19 +19,20 @@ public class DiegoArdUtils extends Thread{
     private static int headPitch = 0;
     private static int SensorsYaw = 0;
     private static int SensorsPitch = 0;
+    private static int shoot = 0;
 
     public void run() {
 
         while (remoteControlling) {
 
-            ArdMap.put("Motor dir", drivefront);
-            ArdMap.put("Motor speed", speed);
-            ArdMap.put("steer", driveyaw);          // Lenkservo
-            ArdMap.put("HYaw", headYaw);            // Turmservo horizontal
-            ArdMap.put("HPitch", headPitch);        // Laufservo vertikal
-            ArdMap.put("SYaw", SensorsYaw);         // Kamera und Ultraschall Yaw
-            ArdMap.put("SPitch", SensorsPitch);     // Kamera und Ultraschall Pitch
-            ArdMap.put("Schrittmotor", null);       // TODO
+            ArdMap.put("Motor dir", drivefront);    // Motoren Richtung                 1 / 2
+            ArdMap.put("Motor speed", speed);       // Motoren speed                    0 - 255
+            ArdMap.put("steer", driveyaw);          // Lenkservo                       -90 - 90
+            ArdMap.put("HYaw", headYaw);            // Turmservo horizontal            -90 - 90
+            ArdMap.put("HPitch", headPitch);        // Laufservo vertikal               2 - 85
+            ArdMap.put("SYaw", SensorsYaw);         // Kamera und Ultraschall Yaw      -90 - 90
+            ArdMap.put("SPitch", SensorsPitch);     // Kamera und Ultraschall Pitch     2 - 85
+            ArdMap.put("Abschuss", shoot);          // Abschuss halt idfk               0 / 1
 
             ArdCues.clear();
 
@@ -48,7 +49,18 @@ public class DiegoArdUtils extends Thread{
             ArdCues.add(ArdMap.get("HPitch"));          // Kopfservo Höhe
             ArdCues.add(ArdMap.get("SYaw"));            // Kamera und Ultraschall Yaw
             ArdCues.add(ArdMap.get("SPitch"));          // Kamera und Ultraschall Pitch
-            ArdCues.add(ArdMap.get("Schrittmotor"));    // TODO: Schrittmotor
+            ArdCues.add(ArdMap.get("Abschuss"));        // Abschuss var
+
+            if(ArdMap.get("Abschuss") == 1) {
+                try {
+                    sleep(125);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                shoot = 0;
+                ArdCues.removeLast();
+                ArdCues.add(0);
+            }
 
             try {
                 sleep(10);
@@ -89,7 +101,7 @@ public class DiegoArdUtils extends Thread{
         if(!isBetween(-90, 90, yaw)) {
             throw new Exception("invalid yaw input");
         }
-        if(!isBetween(4, 85, pitch)) {
+        if(!isBetween(2, 85, pitch)) {
             throw new Exception("invalid pitch input");
         }
         headYaw = yaw;
@@ -100,7 +112,7 @@ public class DiegoArdUtils extends Thread{
         if(!isBetween(-90, 90, yaw)) {
             throw new Exception("invalid yaw input");
         }
-        if(!isBetween(4, 85, pitch)) {
+        if(!isBetween(2, 85, pitch)) {
             throw new Exception("invalid pitch input");
         }
         SensorsYaw = yaw;
@@ -114,6 +126,10 @@ public class DiegoArdUtils extends Thread{
 
     public void stopControl() {
         remoteControlling = false;
+    }
+
+    public void shoot() {
+        shoot = 1;
     }
 }
 
