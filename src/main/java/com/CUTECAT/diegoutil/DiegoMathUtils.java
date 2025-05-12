@@ -17,4 +17,8 @@ public class DiegoMathUtils {
     public static boolean isBetween(int min, int max, int value) {
         return value >= min && value <= max;
     }
+
+    public static int getDifference(int a, int b) {
+        return Math.abs(a - b);
+    }
 }
