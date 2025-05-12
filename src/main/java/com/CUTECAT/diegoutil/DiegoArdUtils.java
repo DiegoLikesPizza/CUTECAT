@@ -13,7 +13,7 @@ public class DiegoArdUtils extends Thread{
     private static boolean remoteControlling;
 
     private static int drivefront = 1;
-    private static int speed = 100;
+    private static int speed = 0;
     private static int driveyaw = 0;
     private static int headYaw = 0;
     private static int headPitch = 0;
@@ -87,21 +87,18 @@ public class DiegoArdUtils extends Thread{
         }
     }
 
-    public void setDriveYaw(int yaw) throws Exception {
-        if(isBetween(-90, 90, yaw)){
-            driveyaw = yaw;
-        } else {
+    public void setDriveYaw(int newYaw) throws Exception {
+        if(!isBetween(-90, 90, newYaw)){
             throw new Exception("invalid yaw input");
         }
+        driveyaw = newYaw;
     }
-
-
 
     public void setHeadView(int yaw, int pitch) throws Exception {
         if(!isBetween(-90, 90, yaw)) {
             throw new Exception("invalid yaw input");
         }
-        if(!isBetween(2, 85, pitch)) {
+        if(!isBetween(2, 70, pitch)) {
             throw new Exception("invalid pitch input");
         }
         headYaw = yaw;
@@ -130,6 +127,11 @@ public class DiegoArdUtils extends Thread{
 
     public void shoot() {
         shoot = 1;
+    }
+
+
+    public static int getValue(String key) {
+        return ArdMap.get(key);
     }
 }
 
