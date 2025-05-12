@@ -14,6 +14,8 @@ import javafx.geometry.Pos;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.Region;
 
+import static com.CUTECAT.GUI.AndreasGUI.Handlung;
+
 public class CUTECAT extends Application {
     private double xOffset = 0;
     private double yOffset = 0;
@@ -59,7 +61,55 @@ public class CUTECAT extends Application {
         setRoundedCorners(root, 10, 10);
         
         primaryStage.show();
+
+
+
+        //Erzeugen von Stage 2(Modus 1)
+        Stage Stage2 = new Stage();
+
+        // Create 2. main container
+        VBox root2 = new VBox();
+        root2.getStyleClass().add("main-container");
+
+        // Add custom title bar
+        CustomTitleBar titleBar2 = new CustomTitleBar(Stage2);
+
+
+        // Create content area
+        GridPane content2 = new GridPane();
+        content2.setHgap(10);
+        content2.setVgap(10);
+        content2.setPadding(new Insets(20));
+        content2.getStyleClass().add("content-area");
+
+        // Add widgets
+        AndreasGUI.addWidgets(content2);
+
+        // Add components to root2
+        root2.getChildren().addAll(titleBar2,content2);
+
+        // Create scene
+        Scene scene2 = new Scene(root2,300,300);
+        scene2.setFill(Color.TRANSPARENT);
+        scene2.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
+
+        // Configure stage2
+        Stage2.initStyle(StageStyle.TRANSPARENT);
+        Stage2.setScene(scene2);
+        Stage2.setTitle("CUTECAT");
+        //Stage2.setFullScreen(true);
+        Stage2.setHeight(1050);
+        Stage2.setWidth(1050);
+
+        // Apply rounded corners
+        setRoundedCorners(root2, 10, 10);
+
+        if(Handlung){
+            primaryStage.close();
+
+        }
     }
+
 
     private void setRoundedCorners(Region root, double arcWidth, double arcHeight) {
         Rectangle clip = new Rectangle(root.getWidth(), root.getHeight());
@@ -77,6 +127,8 @@ public class CUTECAT extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+
 
 
 }
