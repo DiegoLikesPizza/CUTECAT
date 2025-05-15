@@ -143,7 +143,7 @@ public class DiegoArdUtils extends Thread{
             throw new Exception("cannot reach target");
         }
 
-        if (pitches[0] > pitches[1]) {
+        if (pitches[0] < pitches[1]) {
             return (int) pitches[0];
         } else {
             return (int) pitches[1];
