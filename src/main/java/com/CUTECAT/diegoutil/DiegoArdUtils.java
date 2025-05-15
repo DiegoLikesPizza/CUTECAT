@@ -3,14 +3,16 @@ package com.CUTECAT.diegoutil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import static com.CUTECAT.diegoutil.DiegoMathUtils.*;
+import static com.CUTECAT.diegoutil.DiegoPhysicsUtils.*;
 
 public class DiegoArdUtils extends Thread{
 
     private static HashMap<String, Integer> ArdMap = new HashMap<>();
-
     private static ArrayList<Integer> ArdCues = new ArrayList<>();
 
     private static boolean remoteControlling;
+
+    private static final int ballSpeed = 35;        // Startgeschwindigkeit der Kugel in m/s
 
     private static int drivefront = 1;
     private static int speed = 0;
@@ -132,6 +134,20 @@ public class DiegoArdUtils extends Thread{
 
     public static int getValue(String key) {
         return ArdMap.get(key);
+    }
+
+    public static int calculatePitch(int distance) throws Exception {
+        double[] pitches = calculateThrowFunction(distance, ballSpeed);
+
+        if (pitches == null) {
+            throw new Exception("cannot reach target");
+        }
+
+        if (pitches[0] > pitches[1]) {
+            return (int) pitches[0];
+        } else {
+            return (int) pitches[1];
+        }
     }
 }
 
