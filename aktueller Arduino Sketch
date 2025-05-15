@@ -1,8 +1,9 @@
 #include <WiFi.h>
+#include <Stepper.h>
 
 //WIFI-Connection
-const char* ssid = "FRITZ!Box 7590 CZ";
-const char* password = "55593725082290737586";
+const char* ssid = "GB-Lehrer"; //"FRITZ!Box 7590 CZ";   //"GB-Lehrer";
+const char* password = "Flsskrbs9,00!";//"55593725082290737586";  //"Flsskrbs9,00!";
 WiFiServer server1(80);  // HTTP-Server für Messwerte
 WiFiServer server2(81);  // TCP-Server für Befehle
 WiFiClient client1;
@@ -14,18 +15,22 @@ const int speed1pin   = 3,  speed2pin    = 4;
 const int forward3pin = 53, backward3pin = 51, forward4pin = 49, backward4pin = 47;
 const int speed3pin   = 5,  speed4pin    = 6;
 const int ventiltransistorpin = 25;
-const int wifiledpin          = 45;
+const int steps = 2048;
+Stepper stepperName = Stepper(steps, 8, 10, 9, 11);
+const int wifiledpin = 45;
 const int lenkservopin = 8;
 const int turmservopin = 9;
 const int laufservopin = 10;
+const int sensorvertpin = 22;
+const int sensorhoripin = 23;
 const int ultratriggerpin = 13;
 const int ultraechopin = 12;
 
 //Zustände
-int motor1, speed1, motor2, speed2, motor3, speed3, motor4, speed4, lenkservo, turmservo, laufservo;
+int motor1, speed1, motor2, speed2, motor3, speed3, motor4, speed4, lenkservo, turmservo, laufservo, sensorvert,  sensorhori, abschuss;
 
 //Commands
-int newmotor1, newspeed1, newmotor2, newspeed2, newmotor3, newspeed3, newmotor4, newspeed4, newlenkservo, newturmservo, newlaufservo;
+int newmotor1, newspeed1, newmotor2, newspeed2, newmotor3, newspeed3, newmotor4, newspeed4, newlenkservo, newturmservo, newlaufservo, newsensorvert, newsensorhori, newabschuss;
 
 //DATA-Splitting
 void parseCSV(String data) {
@@ -39,6 +44,10 @@ void parseCSV(String data) {
   int eighthComma = data.indexOf(',', seventhComma + 1);
   int ninthComma = data.indexOf(',', eighthComma + 1);
   int tenthComma = data.indexOf(',', ninthComma + 1);
+  int eleventhComma = data.indexOf(',', tenthComma + 1);
+  int twelthComma = data.indexOf(',', eleventhComma + 1);
+  int thirteenthComma = data.indexOf(',', twelthComma + 1);
+
   newmotor1 = data.substring(0, firstComma).toInt();
   newspeed1 = data.substring(firstComma + 1, secondComma).toInt();
   newmotor2 = data.substring(secondComma + 1, thirdComma).toInt();
@@ -49,7 +58,10 @@ void parseCSV(String data) {
   newspeed4 = data.substring(seventhComma + 1, eighthComma).toInt();
   newlenkservo = data.substring(eighthComma + 1, ninthComma).toInt();
   newturmservo = data.substring(ninthComma + 1, tenthComma).toInt();
-  newlaufservo = data.substring(tenthComma + 1).toInt();
+  newlaufservo = data.substring(tenthComma + 1, eleventhComma).toInt();
+  newsensorhori = data.substring(eleventhComma + 1, twelthComma).toInt();
+  newsensorvert = data.substring(twelthComma + 1, thirteenthComma).toInt();
+  newabschuss = data.substring(thirteenthComma + 1).toInt();
 }
 
 //Ultraschallsensor
@@ -145,6 +157,36 @@ void writelaufservo(int angle) {
     delayMicroseconds(20000 - pw);
   }
 }
+void writesensorvertservo(int angle) {
+  int pw = angleToPulse(angle);
+  for (int i = 0; i < 50; ++i) {          // 50 × 20 ms = 1 s Fahrtzeit
+    digitalWrite(sensorvertpin, HIGH);
+    delayMicroseconds(pw);
+    digitalWrite(sensorvertpin, LOW);
+    delayMicroseconds(20000 - pw);
+  }
+}
+void writesensorhoriservo(int angle) {
+  int pw = angleToPulse(angle);
+  for (int i = 0; i < 50; ++i) {          // 50 × 20 ms = 1 s Fahrtzeit
+    digitalWrite(sensorhoripin, HIGH);
+    delayMicroseconds(pw);
+    digitalWrite(sensorhoripin, LOW);
+    delayMicroseconds(20000 - pw);
+  }
+}
+void writeabschuss(){
+  int stepsbackward = -512;
+  stepperName.step(stepsbackward);
+  delay(500);
+  int stepsforward = 512;
+  stepperName.step(stepsforward);
+  delay(1000);
+  digitalWrite(ventiltransistorpin, HIGH);
+  delay(15);
+  digitalWrite(ventiltransistorpin, LOW);
+  delay(5000);
+}
 //VariablenDifferenz
 void checknewData(){
   if (motor1 != newmotor1){
@@ -191,6 +233,18 @@ void checknewData(){
     writelaufservo(newlaufservo);
     laufservo = newlaufservo;
   }
+  if (sensorvert != newsensorvert){
+    writesensorvertservo(newsensorvert);
+    sensorvert = newsensorvert;
+  }
+  if (sensorhori != newsensorhori){
+    writesensorhoriservo(newsensorhori);
+    sensorhori = newsensorhori;
+  }
+  if (abschuss != newabschuss){
+    writeabschuss();
+    abschuss = newabschuss;
+  }
 }
 // Funktions‑Dispatcher
 /*struct CommandHandler {
@@ -226,15 +280,19 @@ void setup() {
   speed3 = 0;
   motor4 = 0;
   speed4 = 0;
-  lenkservo= 0;
-  turmservo= 0;
-  laufservo= 0;
+  lenkservo = 0;
+  turmservo = 0;
+  laufservo = 0;
+  sensorvert = 0;
+  sensorhori = 0;
   pinMode(lenkservopin, OUTPUT);
   pinMode(turmservopin, OUTPUT);
   pinMode(laufservopin, OUTPUT);
   pinMode(wifiledpin, OUTPUT);
   pinMode(ultratriggerpin, OUTPUT);
   pinMode(ultraechopin, INPUT);
+  pinMode(ventiltransistorpin, OUTPUT);
+  stepperName.setSpeed(15);
   //Konsole
   Serial.begin(115200);
   //WIFI

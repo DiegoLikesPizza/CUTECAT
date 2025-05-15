@@ -5,9 +5,11 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.*;
 
+import static java.lang.Thread.sleep;
+
 public class Arduino_HTTP_TCP_Server_Client {
     public static void main(String[] args) {
-        String arduinoIP = "192.168.178.180";
+        String arduinoIP = "172.16.10.127";
 
         // Threadzum Empfangen
         new Thread(() -> {
@@ -23,6 +25,7 @@ public class Arduino_HTTP_TCP_Server_Client {
                         System.out.println("Messwerte vom Arduino: " + line);
                     }
                     in.close();
+                    Thread.sleep(50);
                 } catch (Exception e) {
                     System.err.println("Fehler beim Abrufen der Messwerte: " + e.getMessage());
                 }
