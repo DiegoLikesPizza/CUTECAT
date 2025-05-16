@@ -4,19 +4,30 @@ import com.CUTECAT.diegoutil.DiegoArdUtils;
 
 public abstract class modebase extends DiegoArdUtils {
 
-    private final double WEIGHT = 0.0002;
+    private int targetDistance;
+    private int targetAngle;
 
     private int ammoLeft;
     private int preferredKeySpeed;
 
 
     // Methoden zum Eingeben des Ziels
-    public abstract void setTargetDistance(int newDistance);
-    public abstract void setTargetHeight(int newHeight);
-    public abstract void setTargetRelativeDirection(boolean right, int newDirection);
+    public void setTargetDistance(int newDistance){
+        targetDistance = newDistance;
+    }
+
+    public void setTargetRelativeDirection(boolean right, int newDirection) {
+        if(right){
+            targetAngle = newDirection;
+        } else {
+            targetAngle = -newDirection;
+        }
+    }
 
     // Methode zum Eingeben der verbleibenden Munition
-    public abstract void setRemainingAmmo(int RemainingAmmo);
+    public void setRemainingAmmo(int RemainingAmmo) {
+        ammoLeft = RemainingAmmo;
+    }
 
 
     // manual / semi / auto
