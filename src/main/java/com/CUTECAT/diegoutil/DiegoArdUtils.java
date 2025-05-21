@@ -1,27 +1,35 @@
 package com.CUTECAT.diegoutil;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import static com.CUTECAT.diegoutil.DiegoMathUtils.*;
 import static com.CUTECAT.diegoutil.DiegoPhysicsUtils.*;
+import static com.CUTECAT.diegoutil.DiegoStringUtils.*;
 
 public class DiegoArdUtils extends Thread{
 
-    private static HashMap<String, Integer> ArdMap = new HashMap<>();
-    private static ArrayList<Integer> ArdCues = new ArrayList<>();
 
-    private static boolean remoteControlling;
+    private static final String ARDUINOIP = "172.16.10.127";
 
-    private static final int ballSpeed = 35;        // Startgeschwindigkeit der Kugel in m/s
+    private HashMap<String, Integer> ArdMap = new HashMap<>();
+    protected ArrayList<Integer> ArdCues = new ArrayList<>();
 
-    private static int drivefront = 1;
-    private static int speed = 0;
-    private static int driveyaw = 0;
-    private static int headYaw = 0;
-    private static int headPitch = 0;
-    private static int SensorsYaw = 0;
-    private static int SensorsPitch = 0;
-    private static int shoot = 0;
+    private boolean remoteControlling;
+
+    private static final int BALLSPEED = 35;        // Startgeschwindigkeit der Kugel in m/s
+
+    private int drivefront = 1;
+    private int speed = 0;
+    private int driveyaw = 0;
+    private int headYaw = 0;
+    private int headPitch = 0;
+    private int SensorsYaw = 0;
+    private int SensorsPitch = 0;
+    private int shoot = 0;
 
     public void run() {
 
@@ -121,6 +129,7 @@ public class DiegoArdUtils extends Thread{
     public void startControl() {
         remoteControlling = true;
         this.start();
+        startThread();
     }
 
     public void stopControl() {
@@ -132,12 +141,12 @@ public class DiegoArdUtils extends Thread{
     }
 
 
-    public static int getValue(String key) {
+    public int getValue(String key) {
         return ArdMap.get(key);
     }
 
     public static int calculatePitch(int distance) throws Exception {
-        double[] pitches = calculateThrowFunction(distance, ballSpeed);
+        double[] pitches = calculateThrowFunction(distance, BALLSPEED);
 
         if (pitches == null) {
             throw new Exception("cannot reach target");
@@ -148,6 +157,24 @@ public class DiegoArdUtils extends Thread{
         } else {
             return (int) pitches[1];
         }
+    }
+
+    private void startThread() {
+
+        new Thread(() -> {
+            try (
+                    Socket socket = new Socket(ARDUINOIP, 81);
+                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            ) {
+                while (true) {
+                    String csv = toCsv(ArdCues);
+                    out.println(csv);
+                }
+            } catch (Exception e) {
+                System.err.println("Fehler beim Senden an Arduino: " + e.getMessage());
+            }
+        }).start();
     }
 }
 
