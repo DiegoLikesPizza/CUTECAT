@@ -1,8 +1,6 @@
 package com.CUTECAT.diegoutil;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -11,10 +9,17 @@ import static com.CUTECAT.diegoutil.DiegoMathUtils.*;
 import static com.CUTECAT.diegoutil.DiegoPhysicsUtils.*;
 import static com.CUTECAT.diegoutil.DiegoStringUtils.*;
 
-public abstract class DiegoArdUtils extends Thread{
+public class DiegoArdUtils extends Thread {
 
-
+    private static final String[] MOTORS = {"MOTOR1", "MOTOR2", "MOTOR3", "MOTOR4"};
+    
     private static final String ARDUINOIP = "172.16.10.127";
+    private static final int PORT = 81;
+    private static final int MIN_PITCH = 2;
+    private static final int MAX_PITCH = 85;
+    private static final int MIN_YAW = -90;
+    private static final int MAX_YAW = 90;
+    private static final int MAX_SPEED = 255;
 
     private HashMap<String, Integer> ArdMap = new HashMap<>();
     private ArrayList<Integer> ArdCues = new ArrayList<>();
@@ -23,56 +28,82 @@ public abstract class DiegoArdUtils extends Thread{
 
     private static final int BALLSPEED = 35;        // Startgeschwindigkeit der Kugel in m/s
 
+    private void initializeControlMap() {
+        for (String motor : MOTORS) {
+            ArdMap.put(motor + "_DIR", 1);    // jeder Motor mit eigener dir
+            ArdMap.put(motor + "_SPEED", 0);  // jeder Motor mit eigenem speed
+        }
+        ArdMap.put("steer", 0);
+        ArdMap.put("HYaw", 0);
+        ArdMap.put("HPitch", 0);
+        ArdMap.put("SYaw", 0);
+        ArdMap.put("SPitch", 0);
+        ArdMap.put("Abschuss", 0);
+    }
+
+    private void updateArdCues() {
+        ArdCues.clear();
+
+        for (String motor : MOTORS) {
+            Integer dir = ArdMap.getOrDefault(motor + "_DIR", 1);    // Default to forward
+            Integer speed = ArdMap.getOrDefault(motor + "_SPEED", 0); // Default to stop
+            ArdCues.add(dir);
+            ArdCues.add(speed);
+        }
+
+        ArdCues.add(ArdMap.getOrDefault("steer", 0));
+        ArdCues.add(ArdMap.getOrDefault("HYaw", 0));
+        ArdCues.add(ArdMap.getOrDefault("HPitch", 0));
+        ArdCues.add(ArdMap.getOrDefault("SYaw", 0));
+        ArdCues.add(ArdMap.getOrDefault("SPitch", 0));
+        ArdCues.add(ArdMap.getOrDefault("Abschuss", 0));
+    }
+
     public void run() {
-        try (Socket socket = new Socket(ARDUINOIP, 81);
+        try (Socket socket = new Socket(ARDUINOIP, PORT);
              PrintWriter outprintwriter = new PrintWriter(socket.getOutputStream(), true)) {
             
-        while (remoteControlling) {
-
-            ArdMap.put("Motor dir", 1);             // Motoren Richtung                 1 / 2
-            ArdMap.put("Motor speed", 0);           // Motoren speed                    0 - 255
-            ArdMap.put("steer", 0);                 // Lenkservo                       -90 - 90
-            ArdMap.put("HYaw", 0);                  // Turmservo horizontal            -90 - 90
-            ArdMap.put("HPitch", 0);                // Laufservo vertikal               2 - 85
-            ArdMap.put("SYaw", 0);                  // Kamera und Ultraschall Yaw      -90 - 90
-            ArdMap.put("SPitch", 0);                // Kamera und Ultraschall Pitch     2 - 85
-            ArdMap.put("Abschuss", 0);              // Abschuss halt idfk               0 / 1
-
-            ArdCues.clear();
-
-            ArdCues.add(ArdMap.get("Motor dir"));       // Motor 1
-            ArdCues.add(ArdMap.get("Motor speed"));
-            ArdCues.add(ArdMap.get("Motor dir"));       // Motor 2
-            ArdCues.add(ArdMap.get("Motor speed"));
-            ArdCues.add(ArdMap.get("Motor dir"));       // Motor 3
-            ArdCues.add(ArdMap.get("Motor speed"));
-            ArdCues.add(ArdMap.get("Motor dir"));       // Motor 4
-            ArdCues.add(ArdMap.get("Motor speed"));
-            ArdCues.add(ArdMap.get("steer"));           // Lenkservo
-            ArdCues.add(ArdMap.get("HYaw"));            // Kopfservo Breite
-            ArdCues.add(ArdMap.get("HPitch"));          // Kopfservo Höhe
-            ArdCues.add(ArdMap.get("SYaw"));            // Kamera und Ultraschall Yaw
-            ArdCues.add(ArdMap.get("SPitch"));          // Kamera und Ultraschall Pitch
-            ArdCues.add(ArdMap.get("Abschuss"));        // Abschuss var
-
-            if(ArdMap.get("Abschuss") == 1) {
-                try {
-                    sleep(125);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+            initializeControlMap();  // Initialize with default values
+            
+            while (remoteControlling) {
+                updateArdCues();     // Safely transfer values
+                
+                if(ArdMap.getOrDefault("Abschuss", 0) == 1) {
+                    try {
+                        sleep(125);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException(e);
+                    }
+                    ArdMap.put("Abschuss", 0);
+                    ArdCues.set(ArdCues.size() - 1, 0);  // Safer than removeLast/add
                 }
-                ArdMap.put("shoot", 0);
-                ArdCues.removeLast();
-                ArdCues.add(0);
-            }
 
-            String csv = toCsv(ArdCues);
-            outprintwriter.println(csv);
+                String csv = toCsv(ArdCues);
+                outprintwriter.println(csv);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to establish or maintain connection to Arduino", e);
         }
-    } catch (IOException e) {
-        throw new RuntimeException("Failed to establish or maintain connection to Arduino", e);
     }
-}
+
+    // Updated motor control methods
+    public void setMotorDirection(int motorNumber, boolean forward) {
+        if (motorNumber < 1 || motorNumber > 4) {
+            throw new IllegalArgumentException("Motor number must be between 1 and 4");
+        }
+        ArdMap.put(MOTORS[motorNumber-1] + "_DIR", forward ? 1 : 2);
+    }
+
+    public void setMotorSpeed(int motorNumber, int speed) {
+        if (motorNumber < 1 || motorNumber > 4) {
+            throw new IllegalArgumentException("Motor number must be between 1 and 4");
+        }
+        if (speed < 0 || speed > 255) {
+            throw new IllegalArgumentException("Speed must be between 0 and 255");
+        }
+        ArdMap.put(MOTORS[motorNumber-1] + "_SPEED", speed);
+    }
 
     public void setFront(boolean front){
         if(front){
@@ -82,23 +113,22 @@ public abstract class DiegoArdUtils extends Thread{
         }
     }
 
-    public void setSpeed(int newSpeed) throws Exception {
-        if(isBetween(0, 255, newSpeed)){
-            ArdMap.put("Motor speed", newSpeed);
-        } else {
-            throw new Exception("invalid speed input");
+    public void setSpeed(int newSpeed) throws IllegalArgumentException {
+        if (!isBetween(0, MAX_SPEED, newSpeed)) {
+            throw new IllegalArgumentException("Speed must be between 0 and " + MAX_SPEED);
         }
+        ArdMap.put("Motor speed", newSpeed);
     }
 
     public void setDriveYaw(int newYaw) throws Exception {
-        if(!isBetween(-90, 90, newYaw)){
+        if(!isBetween(MIN_YAW, MAX_YAW, newYaw)){
             throw new Exception("invalid yaw input");
         }
         ArdMap.put("steer", newYaw);
     }
 
     public void setHeadView(int yaw, int pitch) throws Exception {
-        if(!isBetween(-90, 90, yaw)) {
+        if(!isBetween(MIN_YAW, MAX_YAW, yaw)) {
             throw new Exception("invalid yaw input");
         }
         if(!isBetween(2, 70, pitch)) {
@@ -109,10 +139,10 @@ public abstract class DiegoArdUtils extends Thread{
     }
 
     public void setSensorsView(int yaw, int pitch) throws Exception {
-        if(!isBetween(-90, 90, yaw)) {
+        if(!isBetween(MIN_YAW, MAX_YAW, yaw)) {
             throw new Exception("invalid yaw input");
         }
-        if(!isBetween(2, 85, pitch)) {
+        if(!isBetween(MIN_PITCH, MAX_PITCH, pitch)) {
             throw new Exception("invalid pitch input");
         }
         ArdMap.put("SYaw", yaw);
@@ -157,9 +187,9 @@ public abstract class DiegoArdUtils extends Thread{
   |
   |
 3---4
- */
 
-/*
+
+
 ArrayList
 
 Motor1 Richtung     ( 1 = vorwärts; 2 = rückwärts)
