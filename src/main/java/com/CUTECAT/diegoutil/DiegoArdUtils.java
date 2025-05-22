@@ -26,8 +26,6 @@ public class DiegoArdUtils extends Thread {
 
     private boolean remoteControlling;
 
-    private static final int BALLSPEED = 35;        // Startgeschwindigkeit der Kugel in m/s
-
     private void initializeControlMap() {
         for (String motor : MOTORS) {
             ArdMap.put(motor + "_DIR", 1);    // jeder Motor mit eigener dir
@@ -165,20 +163,6 @@ public class DiegoArdUtils extends Thread {
 
     public int getValue(String key) {
         return ArdMap.get(key);
-    }
-
-    public static int calculatePitch(int distance) throws Exception {
-        double[] pitches = calculateThrowFunction(distance, BALLSPEED);
-
-        if (pitches == null) {
-            throw new Exception("cannot reach target");
-        }
-
-        if (pitches[0] < pitches[1]) {
-            return (int) pitches[0];
-        } else {
-            return (int) pitches[1];
-        }
     }
 }
 
