@@ -1,6 +1,7 @@
 package com.CUTECAT.diegoutil;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -10,39 +11,32 @@ import static com.CUTECAT.diegoutil.DiegoMathUtils.*;
 import static com.CUTECAT.diegoutil.DiegoPhysicsUtils.*;
 import static com.CUTECAT.diegoutil.DiegoStringUtils.*;
 
-public class DiegoArdUtils extends Thread{
+public abstract class DiegoArdUtils extends Thread{
 
 
     private static final String ARDUINOIP = "172.16.10.127";
 
     private HashMap<String, Integer> ArdMap = new HashMap<>();
-    protected ArrayList<Integer> ArdCues = new ArrayList<>();
+    private ArrayList<Integer> ArdCues = new ArrayList<>();
 
     private boolean remoteControlling;
 
     private static final int BALLSPEED = 35;        // Startgeschwindigkeit der Kugel in m/s
 
-    private int drivefront = 1;
-    private int speed = 0;
-    private int driveyaw = 0;
-    private int headYaw = 0;
-    private int headPitch = 0;
-    private int SensorsYaw = 0;
-    private int SensorsPitch = 0;
-    private int shoot = 0;
-
     public void run() {
-
+        try (Socket socket = new Socket(ARDUINOIP, 81);
+             PrintWriter outprintwriter = new PrintWriter(socket.getOutputStream(), true)) {
+            
         while (remoteControlling) {
 
-            ArdMap.put("Motor dir", drivefront);    // Motoren Richtung                 1 / 2
-            ArdMap.put("Motor speed", speed);       // Motoren speed                    0 - 255
-            ArdMap.put("steer", driveyaw);          // Lenkservo                       -90 - 90
-            ArdMap.put("HYaw", headYaw);            // Turmservo horizontal            -90 - 90
-            ArdMap.put("HPitch", headPitch);        // Laufservo vertikal               2 - 85
-            ArdMap.put("SYaw", SensorsYaw);         // Kamera und Ultraschall Yaw      -90 - 90
-            ArdMap.put("SPitch", SensorsPitch);     // Kamera und Ultraschall Pitch     2 - 85
-            ArdMap.put("Abschuss", shoot);          // Abschuss halt idfk               0 / 1
+            ArdMap.put("Motor dir", 1);             // Motoren Richtung                 1 / 2
+            ArdMap.put("Motor speed", 0);           // Motoren speed                    0 - 255
+            ArdMap.put("steer", 0);                 // Lenkservo                       -90 - 90
+            ArdMap.put("HYaw", 0);                  // Turmservo horizontal            -90 - 90
+            ArdMap.put("HPitch", 0);                // Laufservo vertikal               2 - 85
+            ArdMap.put("SYaw", 0);                  // Kamera und Ultraschall Yaw      -90 - 90
+            ArdMap.put("SPitch", 0);                // Kamera und Ultraschall Pitch     2 - 85
+            ArdMap.put("Abschuss", 0);              // Abschuss halt idfk               0 / 1
 
             ArdCues.clear();
 
@@ -67,31 +61,30 @@ public class DiegoArdUtils extends Thread{
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                shoot = 0;
+                ArdMap.put("shoot", 0);
                 ArdCues.removeLast();
                 ArdCues.add(0);
             }
 
-            try {
-                sleep(10);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
+            String csv = toCsv(ArdCues);
+            outprintwriter.println(csv);
         }
+    } catch (IOException e) {
+        throw new RuntimeException("Failed to establish or maintain connection to Arduino", e);
     }
+}
 
     public void setFront(boolean front){
         if(front){
-            drivefront = 1;
+            ArdMap.put("Motor dir", 1);
         } else {
-            drivefront = 2;
+            ArdMap.put("Motor dir", 2);
         }
     }
 
     public void setSpeed(int newSpeed) throws Exception {
         if(isBetween(0, 255, newSpeed)){
-            speed = newSpeed;
+            ArdMap.put("Motor speed", newSpeed);
         } else {
             throw new Exception("invalid speed input");
         }
@@ -101,7 +94,7 @@ public class DiegoArdUtils extends Thread{
         if(!isBetween(-90, 90, newYaw)){
             throw new Exception("invalid yaw input");
         }
-        driveyaw = newYaw;
+        ArdMap.put("steer", newYaw);
     }
 
     public void setHeadView(int yaw, int pitch) throws Exception {
@@ -111,8 +104,8 @@ public class DiegoArdUtils extends Thread{
         if(!isBetween(2, 70, pitch)) {
             throw new Exception("invalid pitch input");
         }
-        headYaw = yaw;
-        headPitch = pitch;
+        ArdMap.put("HYaw", yaw);
+        ArdMap.put("HPitch", pitch);
     }
 
     public void setSensorsView(int yaw, int pitch) throws Exception {
@@ -122,14 +115,13 @@ public class DiegoArdUtils extends Thread{
         if(!isBetween(2, 85, pitch)) {
             throw new Exception("invalid pitch input");
         }
-        SensorsYaw = yaw;
-        SensorsPitch = pitch;
+        ArdMap.put("SYaw", yaw);
+        ArdMap.put("SPitch", pitch);
     }
 
     public void startControl() {
         remoteControlling = true;
         this.start();
-        startThread();
     }
 
     public void stopControl() {
@@ -137,7 +129,7 @@ public class DiegoArdUtils extends Thread{
     }
 
     public void shoot() {
-        shoot = 1;
+        ArdMap.put("shoot", 1);
     }
 
 
@@ -157,24 +149,6 @@ public class DiegoArdUtils extends Thread{
         } else {
             return (int) pitches[1];
         }
-    }
-
-    private void startThread() {
-
-        new Thread(() -> {
-            try (
-                    Socket socket = new Socket(ARDUINOIP, 81);
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            ) {
-                while (true) {
-                    String csv = toCsv(ArdCues);
-                    out.println(csv);
-                }
-            } catch (Exception e) {
-                System.err.println("Fehler beim Senden an Arduino: " + e.getMessage());
-            }
-        }).start();
     }
 }
 
