@@ -16,8 +16,8 @@ public class SemiAutoMode extends modebase
     }
 
     @Override
-    public void aim(int distance, int angle) {
-
+    public void aim(int distance, int angle) throws Exception {
+        setHeadView(angle, calculatePitch(distance));
     }
 
     @Override
@@ -34,5 +34,4 @@ public class SemiAutoMode extends modebase
     protected void handleMovement() {
 
     }
-    // Implement all interface methods
 }
