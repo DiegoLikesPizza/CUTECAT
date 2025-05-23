@@ -21,12 +21,8 @@ public abstract class modebase extends DiegoArdUtils {
         targetDistance = newDistance;
     }
 
-    public void setTargetRelativeDirection(boolean right, int newDirection) {
-        if(right){
-            targetAngle = newDirection;
-        } else {
-            targetAngle = -newDirection;
-        }
+    public void setTargetRelativeDirection(int newDirection) {
+        targetAngle = newDirection;
     }
 
     public int getAmmoCount() {
