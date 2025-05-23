@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import static com.CUTECAT.diegoutil.DiegoMathUtils.*;
-import static com.CUTECAT.diegoutil.DiegoPhysicsUtils.*;
 import static com.CUTECAT.diegoutil.DiegoStringUtils.*;
 
 public class DiegoArdUtils extends Thread {
@@ -65,7 +64,10 @@ public class DiegoArdUtils extends Thread {
             
             while (remoteControlling) {
                 updateArdCues();     // Safely transfer values
-                
+
+                String csv = toCsv(ArdCues);
+                outprintwriter.println(csv);
+
                 if(ArdMap.getOrDefault("Abschuss", 0) == 1) {
                     try {
                         sleep(125);
@@ -76,9 +78,6 @@ public class DiegoArdUtils extends Thread {
                     ArdMap.put("Abschuss", 0);
                     ArdCues.set(ArdCues.size() - 1, 0);  // Safer than removeLast/add
                 }
-
-                String csv = toCsv(ArdCues);
-                outprintwriter.println(csv);
             }
         } catch (IOException e) {
             throw new RuntimeException("Failed to establish or maintain connection to Arduino", e);
@@ -159,7 +158,6 @@ public class DiegoArdUtils extends Thread {
     public void shoot() {
         ArdMap.put("shoot", 1);
     }
-
 
     public int getValue(String key) {
         return ArdMap.get(key);
