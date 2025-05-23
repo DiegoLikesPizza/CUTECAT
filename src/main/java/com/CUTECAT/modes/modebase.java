@@ -1,4 +1,3 @@
-// modebase.java
 package com.CUTECAT.modes;
 
 import com.CUTECAT.modes.capabilities.*;
