@@ -103,10 +103,8 @@ public class DiegoArdUtils extends Thread {
     }
 
     public void setFront(boolean front){
-        if(front){
-            ArdMap.put("Motor dir", 1);
-        } else {
-            ArdMap.put("Motor dir", 2);
+        for(int i = 1; i < 4; i++){
+            setMotorDirection(i, front);
         }
     }
 
