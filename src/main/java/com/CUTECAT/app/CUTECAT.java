@@ -4,6 +4,9 @@ import com.CUTECAT.GUI.AndreasGUI;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -11,11 +14,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.Region;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+
 
 
 
 public class CUTECAT extends Application {
-    private double xOffset = 200;
+    private double xOffset = 0;
     private double yOffset = 0;
     public static boolean Handlung = false;
     public static boolean Handlung2 = false;
@@ -47,6 +53,16 @@ public class CUTECAT extends Application {
         scene.setFill(Color.TRANSPARENT);
         scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
 
+        TabPane tabPane = new TabPane();
+        tabPane.getStyleClass().add("styled-tab-pane");
+        Tab tab1 = new Tab("Tab 1", new Label("Home"));
+        Tab tab2 = new Tab("Tab 2", new Label("Ferngesteuerter Modus"));
+        // Closeable tabs (default)
+        tab1.setClosable(true);
+        tab2.setClosable(true);
+        tabPane.getStyleClass().add("visible-tab-close-button");
+        tabPane.getTabs().addAll(tab1, tab2);
+
         // Configure stage
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setScene(scene);
@@ -68,7 +84,7 @@ public class CUTECAT extends Application {
             }
         });
 
-        scene.setOnMouseClicked(e ->{
+        scene.setOnMouseClicked(e2 ->{
             if (Handlung2) {
                 openthirdStage();
                 primaryStage.close();
@@ -76,50 +92,6 @@ public class CUTECAT extends Application {
         });
 
 
-
-        /*
-        // Erzeugen von Stage 2(Modus 1)
-        Stage Stage2 = new Stage();
-
-        // Create 2. main container
-        VBox root2 = new VBox();
-        root2.getStyleClass().add("main-container");
-
-        // Add custom title bar
-        CustomTitleBar titleBar2 = new CustomTitleBar(Stage2);
-
-
-        // Create content area
-        Pane content2 = new Pane();
-        //content2.setHgap(10);
-        //content2.setVgap(10);
-        content2.setPadding(new Insets(20));
-        content2.getStyleClass().add("content-area");
-
-        // Add widgets
-        AndreasGUI.addWidgets2(content2);
-
-        // Add components to root2
-        root2.getChildren().addAll(titleBar2,content2);
-
-        // Create scene
-        Scene scene2 = new Scene(root2,300,300);
-        scene2.setFill(Color.TRANSPARENT);
-        scene2.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-        // Configure stage2
-        Stage2.initStyle(StageStyle.TRANSPARENT);
-        Stage2.setScene(scene2);
-        Stage2.setTitle("CUTECAT");
-        //Stage2.setFullScreen(true);
-        Stage2.setHeight(1080);
-        Stage2.setWidth(1920);
-
-        // Apply rounded corners
-        setRoundedCorners(root2, 10, 10);
-
-        //Stage2.show();
-        */
     }
 
     private void opensecondStage() {
