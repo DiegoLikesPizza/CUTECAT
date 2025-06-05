@@ -28,6 +28,10 @@ public class RandomCommandCreator {
             commands.add(0);   //Stellung Lenkservo
             commands.add(90);  //Stellung Tumservo
             commands.add(180); //Stellung Laufservo
+            commands.add(0);   //Stellung Sensorvert
+            commands.add(0);   //Stellung Sensorhori
+            commands.add(0);   //Stellung schuss
+
             return commands;
         } else if (direction == 2) {
             ArrayList<Integer> commands = new ArrayList<>();
