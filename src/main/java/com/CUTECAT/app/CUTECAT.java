@@ -4,9 +4,9 @@ import com.CUTECAT.GUI.AndreasGUI;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -14,17 +14,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.Region;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
 
 
 
 public class CUTECAT extends Application {
     private double xOffset = 0;
     private double yOffset = 0;
-    public static boolean Handlung = false;
-    public static boolean Handlung2 = false;
 
     @Override
     public void start(Stage primaryStage) {
@@ -37,16 +32,38 @@ public class CUTECAT extends Application {
         CustomTitleBar titleBar = new CustomTitleBar(primaryStage);
         
         // Create content area
-        Pane content = new Pane();
+        GridPane parent = new GridPane();
         //content.setHgap(10);
         //content.setVgap(10);
-        content.setPadding(new Insets(20));
-        content.getStyleClass().add("content-area");
-        // Add widgets
-        AndreasGUI.addWidgets(content);
+        parent.setPadding(new Insets(20));
+        parent.getStyleClass().add("content-area");
 
-        // Add components to root
-        root.getChildren().addAll(titleBar, content);
+
+        Pane content2 = new Pane();
+        //content.setHgap(10);
+        //content.setVgap(10);
+        content2.setPadding(new Insets(20));
+        content2.getStyleClass().add("content-area");
+
+        Pane content3 = new Pane();
+        //content.setHgap(10);
+        //content.setVgap(10);
+        content3.setPadding(new Insets(20));
+        content3.getStyleClass().add("content-area");
+
+        Pane content4 = new Pane();
+        //content.setHgap(10);
+        //content.setVgap(10);
+        content4.setPadding(new Insets(20));
+        content4.getStyleClass().add("content-area");
+
+        // Add widgets
+        WidgetFactory.addWidgets(parent);
+        AndreasGUI.addWidgets2(content2);
+        AndreasGUI.addWidgets3(content3);
+        AndreasGUI.addWidgets4(content4);
+
+
 
         // Create scene
         Scene scene = new Scene(root,300,300);
@@ -54,14 +71,34 @@ public class CUTECAT extends Application {
         scene.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
 
         TabPane tabPane = new TabPane();
+        tabPane.setLayoutX(0);
+        tabPane.setLayoutY(20);
         tabPane.getStyleClass().add("styled-tab-pane");
-        Tab tab1 = new Tab("Tab 1", new Label("Home"));
-        Tab tab2 = new Tab("Tab 2", new Label("Ferngesteuerter Modus"));
+        Tab tab1 = new Tab("Home              ");
+        tab1.setContent(parent);
+
+        Tab tab2 = new Tab("Ferngesteuerter Modus");
+        tab2.setContent(content2);
         // Closeable tabs (default)
         tab1.setClosable(true);
         tab2.setClosable(true);
         tabPane.getStyleClass().add("visible-tab-close-button");
-        tabPane.getTabs().addAll(tab1, tab2);
+
+        Tab tab3 = new Tab("Halbautomatischer Modus");
+        tab3.setContent(content3);
+        // Closeable tabs (default)
+        tab3.setClosable(true);
+        tabPane.getStyleClass().add("visible-tab-close-button");
+
+        Tab tab4 = new Tab("Vollautomatischer Modus");
+        tab4.setContent(content4);
+        tab4.setClosable(true);
+        tabPane.getStyleClass().add("visible-tab-close-button");
+
+        tabPane.getTabs().addAll(tab1, tab2, tab3, tab4);
+
+        // Add components to root
+        root.getChildren().addAll(titleBar, tabPane);
 
         // Configure stage
         primaryStage.initStyle(StageStyle.TRANSPARENT);
@@ -77,7 +114,7 @@ public class CUTECAT extends Application {
         
         primaryStage.show();
 
-        scene.setOnMouseClicked(e ->{
+        /*scene.setOnMouseClicked(e ->{
             if (Handlung) {
                 opensecondStage();
                 primaryStage.close();
@@ -89,12 +126,12 @@ public class CUTECAT extends Application {
                 openthirdStage();
                 primaryStage.close();
             }
-        });
+        });*/
 
 
     }
 
-    private void opensecondStage() {
+    /*private void opensecondStage() {
         //Erzeugen von Stage 2(Modus 1)
         Stage Stage2 = new Stage();
 
@@ -180,7 +217,7 @@ public class CUTECAT extends Application {
         setRoundedCorners(root3, 10, 10);
 
         Stage3.show();
-    }
+    }*/
 
 
     private void setRoundedCorners(Region root, double arcWidth, double arcHeight) {
