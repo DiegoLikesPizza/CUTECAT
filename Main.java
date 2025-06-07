@@ -12,7 +12,7 @@ public class Main {
             while (true) {
                 System.out.println(commandReader.getCurrentCommands());
                 try {
-                    Thread.sleep(1); // pausiert 1 Sekunde
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

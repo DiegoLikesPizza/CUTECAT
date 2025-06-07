@@ -41,7 +41,7 @@ public class KeyInputHandler extends JPanel implements KeyListener {
             public void run() {
                 printKeyStates();
             }
-        }, 0, 1);
+        }, 0, 3000);
     }
 
     private void printKeyStates() {
