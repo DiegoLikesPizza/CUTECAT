@@ -79,10 +79,10 @@ public class RandomCommandCreator {
             commands.add(2);   //Richtung Motor4
             commands.add(150); //Geschwindigkeit Motor4
             commands.add(0);   //Stellung Lenkservo
-            commands.add(90);  //Stellung Tumservo
-            commands.add(0); //Stellung Laufservo
-            commands.add(0);   //Stellung Sensor hori
-            commands.add(0);   //Stellung Sensor vert
+            commands.add(120);  //Stellung Tumservo
+            commands.add(55); //Stellung Laufservo
+            commands.add(180);   //Stellung Sensor hori
+            commands.add(140);   //Stellung Sensor vert
             commands.add(0);   //Abschuss
             return commands;
         }
@@ -97,10 +97,10 @@ public class RandomCommandCreator {
             commands.add(2);   //Richtung Motor4
             commands.add(150); //Geschwindigkeit Motor4
             commands.add(90);   //Stellung Lenkservo
-            commands.add(75);  //Stellung Tumservo
-            commands.add(0); //Stellung Laufservo
-            commands.add(0);   //Stellung Sensor hori
-            commands.add(0);   //Stellung Sensor vert
+            commands.add(90);  //Stellung Tumservo
+            commands.add(90); //Stellung Laufservo
+            commands.add(90);   //Stellung Sensor hori
+            commands.add(90);   //Stellung Sensor vert
             commands.add(0);   //Abschuss
             return commands;
         }
@@ -115,10 +115,10 @@ public class RandomCommandCreator {
             commands.add(2);   //Richtung Motor4
             commands.add(150); //Geschwindigkeit Motor4
             commands.add(180);   //Stellung Lenkservo
-            commands.add(180);  //Stellung Tumservo
-            commands.add(0); //Stellung Laufservo
+            commands.add(150);  //Stellung Tumservo
+            commands.add(20); //Stellung Laufservo
             commands.add(0);   //Stellung Sensor hori
-            commands.add(0);   //Stellung Sensor vert
+            commands.add(115);   //Stellung Sensor vert
             commands.add(0);   //Abschuss
             return commands;
         }
@@ -169,10 +169,10 @@ public class RandomCommandCreator {
             commands.add(1);   //Richtung Motor4
             commands.add(150); //Geschwindigkeit Motor4
             commands.add(180);   //Stellung Lenkservo
-            commands.add(45);  //Stellung Tumservo
+            commands.add(90);  //Stellung Tumservo
             commands.add(0); //Stellung Laufservo
             commands.add(0);   //Stellung Sensor hori
-            commands.add(0);   //Stellung Sensor vert
+            commands.add(65);   //Stellung Sensor vert
             commands.add(0);   //Abschuss
             return commands;
         }
@@ -188,9 +188,9 @@ public class RandomCommandCreator {
             commands.add(0);
             commands.add(90);
             commands.add(90);
-            commands.add(0);
-            commands.add(0);
-            commands.add(0);
+            commands.add(90);
+            commands.add(90);
+            commands.add(90);
             commands.add(0);
             return commands;
         }

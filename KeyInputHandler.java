@@ -8,10 +8,10 @@ import java.util.TimerTask;
 public class KeyInputHandler extends JPanel implements KeyListener {
 
     private final ArrayList<Integer> keyStates;
-    private final int MAX_ROTATION = 50;
-    private final int MIN_ROTATION = 0;
-    private final int MAX_SENSOR = 130;
-    private final int MIN_SENSOR = 50;
+    private final int MAX_ROTATION = 130;
+    private final int MIN_ROTATION = 70;
+    private final int MAX_SENSOR = 180;
+    private final int MIN_SENSOR = 0;
     private final int MAX_TURM = 180;
     private final int MIN_TURM = 0;
     private final int MAX_LAUF = 70;
@@ -23,7 +23,7 @@ public class KeyInputHandler extends JPanel implements KeyListener {
     };
 
     public KeyInputHandler() {
-        keyStates = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 90, 90, 0, 0));
+        keyStates = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 90, 90, 90, 90, 0));
         setFocusable(true);
         addKeyListener(this);
 
@@ -33,15 +33,14 @@ public class KeyInputHandler extends JPanel implements KeyListener {
         frame.setSize(400, 200);
         frame.add(this);
         frame.setVisible(true);
-
         // Timer zur Konsolenausgabe
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                printKeyStates();
+                //printKeyStates();
             }
-        }, 0, 3000);
+        }, 0, 100);
     }
 
     private void printKeyStates() {
@@ -159,7 +158,6 @@ public class KeyInputHandler extends JPanel implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // Not used
     }
 
     public static void main(String[] args) {

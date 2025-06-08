@@ -8,7 +8,8 @@ import java.util.*;
 public class Arduino_HTTP_TCP_Server_Client {
     public static void main(String[] args) {
         String arduinoIP = "192.168.178.180";
-        //KeyInputHandler keyInputHandler = new KeyInputHandler();
+        KeyInputHandler keyInputHandler = new KeyInputHandler();
+        CommandReader reader = new CommandReader(keyInputHandler);
 
         // Threadzum Empfangen
         new Thread(() -> {
@@ -40,11 +41,10 @@ public class Arduino_HTTP_TCP_Server_Client {
             ) {
                 while (true) {
                     RandomCommandCreator rand = new RandomCommandCreator();
-                    //CommandReader reader = new CommandReader(keyInputHandler);
                     int i = scanner.nextInt();
-                    ArrayList commands = rand.createrandomCommands(i);//reader.getCurrentCommands();
+                    ArrayList commands = rand.createrandomCommands(i);//reader.getCurrentCommands();//rand.createrandomCommands(i);//reader.getCurrentCommands();//// /
                     String csv = toCsv(commands);
-                    System.out.println(csv);
+                    System.out.println("CSV: [" + csv + "]");
                     out.println(csv);
                     //String response = in.readLine();
                     //System.out.println("Antwort vom Arduino: " + response);
