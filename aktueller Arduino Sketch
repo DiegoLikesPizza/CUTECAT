@@ -2,8 +2,8 @@
 #include <Stepper.h>
 
 //WIFI-Connection
-const char* ssid = "GB-Lehrer"; //"FRITZ!Box 7590 CZ";   //"GB-Lehrer";
-const char* password = "Flsskrbs9,00!";//"55593725082290737586";  //"Flsskrbs9,00!";
+const char* ssid = "FRITZ!Box 7590 CZ";   //"GB-Lehrer";
+const char* password = "55593725082290737586";  //"Flsskrbs9,00!";
 WiFiServer server1(80);  // HTTP-Server für Messwerte
 WiFiServer server2(81);  // TCP-Server für Befehle
 WiFiClient client1;
@@ -16,7 +16,7 @@ const int forward3pin = 53, backward3pin = 51, forward4pin = 49, backward4pin = 
 const int speed3pin   = 5,  speed4pin    = 6;
 const int ventiltransistorpin = 25;
 const int steps = 2048;
-Stepper stepperName = Stepper(steps, 8, 10, 9, 11);
+Stepper stepperName = Stepper(steps, 28, 30, 29, 31);
 const int wifiledpin = 45;
 const int lenkservopin = 8;
 const int turmservopin = 9;
@@ -59,8 +59,8 @@ void parseCSV(String data) {
   newlenkservo = data.substring(eighthComma + 1, ninthComma).toInt();
   newturmservo = data.substring(ninthComma + 1, tenthComma).toInt();
   newlaufservo = data.substring(tenthComma + 1, eleventhComma).toInt();
-  newsensorhori = data.substring(eleventhComma + 1, twelthComma).toInt();
-  newsensorvert = data.substring(twelthComma + 1, thirteenthComma).toInt();
+  newsensorvert = data.substring(eleventhComma + 1, twelthComma).toInt();
+  newsensorhori = data.substring(twelthComma + 1, thirteenthComma).toInt();
   newabschuss = data.substring(thirteenthComma + 1).toInt();
 }
 
@@ -176,16 +176,17 @@ void writesensorhoriservo(int angle) {
   }
 }
 void writeabschuss(){
-  int stepsbackward = -512;
+  if (newabschuss == 1){
+  int stepsbackward = 512;
   stepperName.step(stepsbackward);
   delay(500);
-  int stepsforward = 512;
+  int stepsforward = -512;
   stepperName.step(stepsforward);
   delay(1000);
   digitalWrite(ventiltransistorpin, HIGH);
   delay(15);
   digitalWrite(ventiltransistorpin, LOW);
-  delay(5000);
+  }
 }
 //VariablenDifferenz
 void checknewData(){
@@ -324,38 +325,54 @@ void loop() {
   ultradauer = pulseIn(ultraechopin, HIGH);
   longultraabstand = mikrosekundenzucm(ultradauer);
   ultraabstand = String(longultraabstand);
-
+  Serial.println("Loop!");
   // 1. HTTP-Server: Java holt Messwerte
   client1 = server1.available();
-  if (client1) {
-    String req = client1.readStringUntil('\r');
-    client1.flush();
-
-    if (req.indexOf("GET /messwerte") >= 0) {
-      // Richtige Anfrage: Messwerte liefern
-      String response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n";
-      response += ultraabstand;  // Beispielwerte (CSV)
-      client1.print(response);
-    } else {
-      // Andere Anfrage: 404
-      String response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n";
-      response += "Pfad nicht gefunden";
-      client1.print(response);
+if (client1) {
+  Serial.println("HTTP-Client verbunden");
+  unsigned long timeout = millis() + 1000;  // 1 Sekunde Timeout
+  String req = "";
+  while (client1.connected() && millis() < timeout) {
+    if (client1.available()) {
+      char c = client1.read();
+      if (c == '\r') break;
+      req += c;
     }
-    client1.stop();
   }
+
+  // Jetzt auswerten, wenn etwas angekommen ist
+  if (req.indexOf("GET /messwerte") >= 0) {
+    // Richtige Anfrage: Messwerte liefern
+    String response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n";
+    response += ultraabstand;  // z.B. 123 (cm)
+    client1.print(response);
+  } else {
+    // Andere Anfrage: 404
+    String response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\n";
+    response += "Pfad nicht gefunden";
+    client1.print(response);
+  }
+  delay(1);  // kurz warten bevor Verbindung beendet wird
+  client1.stop();
+  Serial.println("HTTP-Client getrennt");
+}
 
   // 2. TCP-Server: Java sendet Befehle
   if (!client2 || !client2.connected()) {
     client2 = server2.available();
   }
+  static String inputBuffer = "";
   if (client2 && client2.connected()) {
-    if (client2.available()) {
-      String command = client2.readStringUntil('\n');
-      command.trim();
-      parseCSV(command);
-      checknewData();
+    while (client2.available()) {
+      char c = client2.read();
+      if (c == '\n') {
+        parseCSV(inputBuffer);
+        checknewData();
+        inputBuffer = "";
+      } else {
+        inputBuffer += c;
+      }
     }
   }
-  delay(100);
 }
+
