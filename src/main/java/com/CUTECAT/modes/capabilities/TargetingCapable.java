@@ -1,4 +1,3 @@
-// TargetingCapable.java
 package com.CUTECAT.modes.capabilities;
 
 public interface TargetingCapable {

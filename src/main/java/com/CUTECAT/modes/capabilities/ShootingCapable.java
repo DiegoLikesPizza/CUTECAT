@@ -1,4 +1,3 @@
-// ShootingCapable.java
 package com.CUTECAT.modes.capabilities;
 
 public interface ShootingCapable {
