@@ -101,7 +101,7 @@ public class RandomCommandCreator {
             commands.add(90); //Stellung Laufservo
             commands.add(90);   //Stellung Sensor hori
             commands.add(90);   //Stellung Sensor vert
-            commands.add(0);   //Abschuss
+            commands.add(1);   //Abschuss
             return commands;
         }
         else if (direction == 5) {
