@@ -2,11 +2,12 @@ package com.CUTECAT.app;
 
 import com.CUTECAT.GUI.AndreasGUI;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -15,6 +16,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.Region;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class CUTECAT extends Application {
@@ -32,11 +38,11 @@ public class CUTECAT extends Application {
         CustomTitleBar titleBar = new CustomTitleBar(primaryStage);
         
         // Create content area
-        GridPane parent = new GridPane();
+        Pane content = new Pane();
         //content.setHgap(10);
         //content.setVgap(10);
-        parent.setPadding(new Insets(20));
-        parent.getStyleClass().add("content-area");
+        content.setPadding(new Insets(20));
+        content.getStyleClass().add("content-area");
 
 
         Pane content2 = new Pane();
@@ -58,7 +64,7 @@ public class CUTECAT extends Application {
         content4.getStyleClass().add("content-area");
 
         // Add widgets
-        WidgetFactory.addWidgets(parent);
+        AndreasGUI.addWidgets(content);
         AndreasGUI.addWidgets2(content2);
         AndreasGUI.addWidgets3(content3);
         AndreasGUI.addWidgets4(content4);
@@ -75,7 +81,7 @@ public class CUTECAT extends Application {
         tabPane.setLayoutY(20);
         tabPane.getStyleClass().add("styled-tab-pane");
         Tab tab1 = new Tab("Home              ");
-        tab1.setContent(parent);
+        tab1.setContent(content);
 
         Tab tab2 = new Tab("Ferngesteuerter Modus");
         tab2.setContent(content2);
@@ -96,6 +102,40 @@ public class CUTECAT extends Application {
         tabPane.getStyleClass().add("visible-tab-close-button");
 
         tabPane.getTabs().addAll(tab1, tab2, tab3, tab4);
+
+        Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+
+
+        /*tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
+                if (oldValue == tab1) {
+                    if (newValue == tab2 || newValue == tab3 || newValue == tab4 ) {
+                        //Auswahl auf den alten Tab zurücksetzen
+                        tabPane.getSelectionModel().select(oldValue);
+                    }
+                }
+                if (oldValue == tab2) {
+                    if (newValue == tab1 || newValue == tab3 || newValue == tab4 ) {
+                        //Auswahl auf den alten Tab zurücksetzen
+                        tabPane.getSelectionModel().select(oldValue);
+                    }
+                }
+                if (oldValue == tab3) {
+                    if (newValue == tab1 || newValue == tab2 || newValue == tab4 ) {
+                        //Auswahl auf den alten Tab zurücksetzen
+                        tabPane.getSelectionModel().select(oldValue);
+                    }
+                }
+                if (oldValue == tab4) {
+                    if (newValue == tab1 || newValue == tab3 || newValue == tab2 ) {
+                        //Auswahl auf den alten Tab zurücksetzen
+                        tabPane.getSelectionModel().select(oldValue);
+                    }
+                }
+            }
+        });*/
+
 
         // Add components to root
         root.getChildren().addAll(titleBar, tabPane);
@@ -131,93 +171,7 @@ public class CUTECAT extends Application {
 
     }
 
-    /*private void opensecondStage() {
-        //Erzeugen von Stage 2(Modus 1)
-        Stage Stage2 = new Stage();
 
-        // Create 2. main container
-        VBox root2 = new VBox();
-        root2.getStyleClass().add("main-container");
-
-        // Add custom title bar
-        CustomTitleBar titleBar2 = new CustomTitleBar(Stage2);
-
-
-        // Create content area
-        Pane content2 = new Pane();
-        //content2.setHgap(10);
-        //content2.setVgap(10);
-        content2.setPadding(new Insets(20));
-        content2.getStyleClass().add("content-area");
-
-        // Add widgets
-        AndreasGUI.addWidgets2(content2);
-
-        // Add components to root2
-        root2.getChildren().addAll(titleBar2,content2);
-
-        // Create scene
-        Scene scene2 = new Scene(root2,300,300);
-        scene2.setFill(Color.TRANSPARENT);
-        scene2.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-        // Configure stage2
-        Stage2.initStyle(StageStyle.TRANSPARENT);
-        Stage2.setScene(scene2);
-        Stage2.setTitle("CUTECAT");
-        //Stage2.setFullScreen(true);
-        Stage2.setHeight(1080);
-        Stage2.setWidth(1920);
-
-        // Apply rounded corners
-        setRoundedCorners(root2, 10, 10);
-
-        Stage2.show();
-    }
-
-    private void openthirdStage() {
-        //Erzeugen von Stage 3(Modus 2)
-        Stage Stage3 = new Stage();
-
-        // Create 2. main container
-        VBox root3 = new VBox();
-        root3.getStyleClass().add("main-container");
-
-        // Add custom title bar
-        CustomTitleBar titleBar3 = new CustomTitleBar(Stage3);
-
-
-        // Create content area
-        Pane content3 = new Pane();
-        //content3.setHgap(10);
-        //content3.setVgap(10);
-        content3.setPadding(new Insets(20));
-        content3.getStyleClass().add("content-area");
-
-        // Add widgets
-        AndreasGUI.addWidgets3(content3);
-
-        // Add components to root2
-        root3.getChildren().addAll(titleBar3, content3);
-
-        // Create scene
-        Scene scene3 = new Scene(root3,300,300);
-        scene3.setFill(Color.TRANSPARENT);
-        scene3.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
-
-        // Configure stage2
-        Stage3.initStyle(StageStyle.TRANSPARENT);
-        Stage3.setScene(scene3);
-        Stage3.setTitle("CUTECAT");
-        //Stage2.setFullScreen(true);
-        Stage3.setHeight(1080);
-        Stage3.setWidth(1920);
-
-        // Apply rounded corners
-        setRoundedCorners(root3, 10, 10);
-
-        Stage3.show();
-    }*/
 
 
     private void setRoundedCorners(Region root, double arcWidth, double arcHeight) {
