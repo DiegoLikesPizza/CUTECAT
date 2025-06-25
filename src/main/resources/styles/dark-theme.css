@@ -1,0 +1,408 @@
+/* Color Variables */
+* {
+    -fx-primary-color: #6c5ce7;
+    -fx-primary-dark: #5849c2;
+    -fx-primary-light: #8f7ff7;
+    -fx-background-dark: #121212;
+    -fx-background-layer: rgba(255, 255, 255, 0.05);
+    -fx-text-color: #ffffff;
+    -fx-text-secondary: #b3b3b3;
+    -fx-success-color: #00b894;
+    -fx-warning-color: #fdcb6e;
+    -fx-error-color: #ff7675;
+}
+
+/* Main Container */
+.main-container {
+    -fx-background-color: -fx-background-dark;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: -fx-background-layer;
+    -fx-border-width: 1;
+}
+
+/* Title Bar */
+.title-bar {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 10 10 0 0;
+    -fx-padding: 0 10;
+}
+
+.window-title {
+    -fx-text-fill: -fx-text-color;
+    -fx-font-size: 14px;
+    -fx-padding: 10;
+}
+
+.window-controls .button {
+    -fx-background-color: transparent;
+    -fx-min-width: 35px;
+    -fx-min-height: 35px;
+    -fx-padding: 5;
+    -fx-background-radius: 5;
+    -fx-border-width: 0;
+    -fx-content-display: graphic-only;
+}
+
+.window-controls .button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.window-controls .button .image-view {
+    -fx-opacity: 0.8;
+}
+
+.window-controls .button:hover .image-view {
+    -fx-opacity: 1;
+}
+
+.close-button:hover {
+    -fx-background-color: #ff4444 !important;
+}
+
+/* Content Area */
+.content-area {
+    -fx-background-color: -fx-background-dark;
+    -fx-padding: 20;
+    -fx-background-radius: 10;
+}
+
+/* Widget Cards */
+.widget-card {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 0);
+}
+
+.card-title {
+    -fx-text-fill: -fx-text-color;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Text Fields */
+.styled-text-field {
+    -fx-background-color: -fx-background-layer;
+    -fx-text-fill: -fx-text-color;
+    -fx-prompt-text-fill: -fx-text-secondary;
+    -fx-background-radius: 4;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4;
+    -fx-padding: 8;
+}
+
+.styled-text-field:focused {
+    -fx-border-color: -fx-primary-color;
+}
+
+/* Labels */
+.styled-label {
+    -fx-text-fill: -fx-text-color;
+    -fx-font-size: 12px;
+}
+
+/* Buttons */
+.styled-button {
+    -fx-background-radius: 4;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.primary-button {
+    -fx-background-color: -fx-primary-color;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: -fx-primary-dark;
+}
+
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-border-color: -fx-primary-color;
+    -fx-text-fill: -fx-primary-color;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+}
+
+.secondary-button:hover {
+    -fx-background-color: rgba(108, 92, 231, 0.1);
+}
+
+/* Toggle Buttons */
+.styled-toggle {
+    -fx-background-color: -fx-background-layer;
+    -fx-text-fill: -fx-text-color;
+    -fx-background-radius: 4;
+    -fx-padding: 8 16;
+}
+
+.styled-toggle:selected {
+    -fx-background-color: -fx-primary-color;
+}
+
+/* Progress Indicators */
+.styled-progress-bar {
+    -fx-accent: -fx-primary-color;
+}
+
+.styled-progress-bar .track {
+    -fx-background-color: -fx-background-layer;
+}
+
+.styled-progress-indicator {
+    -fx-progress-color: -fx-primary-color;
+}
+
+.styled-progress-indicator .percentage {
+    -fx-fill: -fx-text-color;
+}
+
+.styled-progress-indicator > .determinate-indicator > .indicator {
+    -fx-background-color: transparent;
+}
+
+.styled-progress-indicator > .determinate-indicator > .progress {
+    -fx-background-color: -fx-primary-color;
+}
+
+/* Scroll Bars */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: -fx-primary-color;
+    -fx-background-radius: 1000;
+}
+
+.scroll-bar .track {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 1000;
+}
+
+/* ComboBox */
+.styled-combo-box {
+    -fx-background-color: -fx-background-layer;
+    -fx-text-fill: -fx-text-color;
+    -fx-background-radius: 4;
+}
+
+.styled-combo-box .list-cell {
+    -fx-text-fill: -fx-text-color;
+    -fx-background-color: transparent;
+}
+
+.styled-combo-box .list-view {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 4;
+}
+
+/* CheckBox */
+.styled-check-box {
+    -fx-text-fill: -fx-text-color;
+}
+
+.styled-check-box .box {
+    -fx-background-color: -fx-background-layer;
+    -fx-border-color: -fx-primary-color;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+
+.styled-check-box:selected .mark {
+    -fx-background-color: -fx-text-color;
+}
+
+.styled-check-box:selected .box {
+    -fx-background-color: -fx-primary-color;
+}
+
+/* RadioButton */
+.styled-radio-button {
+    -fx-text-fill: -fx-text-color;
+}
+
+.styled-radio-button .radio {
+    -fx-background-color: -fx-background-layer;
+    -fx-border-color: -fx-primary-color;
+    -fx-border-radius: 100;
+}
+
+.styled-radio-button:selected .radio {
+    -fx-background-color: -fx-primary-color;
+}
+
+/* Slider */
+.styled-slider .track {
+    -fx-background-color: -fx-background-layer;
+}
+
+.styled-slider .thumb {
+    -fx-background-color: -fx-primary-color;
+}
+
+/* TextArea */
+.styled-text-area {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-color;
+    -fx-background-radius: 4;
+}
+
+.styled-text-area .content {
+    -fx-background-color: -fx-background-layer;
+}
+
+.styled-text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.styled-text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.styled-text-area .scroll-pane .content {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 4;
+}
+
+/* TabPane */
+.styled-tab-pane {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-color;
+    -fx-tab-min-height: 30px;
+}
+
+.styled-tab-pane > .tab-header-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.styled-tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 4 4 0 0;
+    -fx-border-color: transparent;
+
+}
+
+.styled-tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: -fx-primary-color;
+}
+
+.styled-tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.styled-tab-pane .focus-indicator {
+    -fx-border-color: transparent;
+}
+
+.styled-tab-pane .tab-label {
+    -fx-text-fill: -fx-text-color;
+}
+
+.styled-tab-pane .tab-content-area {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 4;
+    -fx-padding: 10;
+}
+
+.styled-tab-pane .tab-down-button {
+    -fx-background-color: transparent;
+}
+
+.styled-tab-pane > .tab-header-area > .control-buttons-tab {
+    -fx-background-color: transparent;
+}
+
+.styled-tab-pane .tab-header-area .control-buttons-tab .tab-down-button {
+    -fx-background-color: transparent;
+}
+
+.styled-tab-pane .tab-header-area .control-buttons-tab .tab-down-button .arrow {
+    -fx-background-color: -fx-text-color;
+}
+
+.styled-tab-pane .tab-content-area * {
+    -fx-text-fill: -fx-text-color;
+}
+
+.visible-tab-close-button .tab-close-button {
+    -fx-background-color: -fx-text-color;
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+}
+
+.visible-tab-close-button .tab-close-button:hover {
+    -fx-background-color: -fx-error-color;
+}
+
+/* List/Table View */
+.styled-list-view, .styled-table-view {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 4;
+}
+
+.styled-list-view .list-cell, .styled-table-view .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-color;
+}
+
+.styled-list-view .list-cell:filled:selected, 
+.styled-table-view .table-row-cell:filled:selected {
+    -fx-background-color: -fx-primary-color;
+}
+
+/* ScrollPane */
+.styled-scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.styled-scroll-pane > .viewport {
+    -fx-background-color: -fx-background-layer;
+}
+
+.styled-scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+.styled-scroll-pane .label {
+    -fx-text-fill: -fx-text-color;
+}
+
+/* Container Boxes */
+.container-box {
+    -fx-background-color: -fx-background-layer;
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}
+
+.container-box-header {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-color;
+}
+
+/* Status Labels */
+.status-success {
+    -fx-text-fill: -fx-success-color;
+}
+
+.status-warning {
+    -fx-text-fill: -fx-warning-color;
+}
+
+.status-error {
+    -fx-text-fill: -fx-error-color;
+}
+
+/* Tooltip */
+.tooltip {
+    -fx-background-color: -fx-background-layer;
+    -fx-text-fill: -fx-text-color;
+    -fx-background-radius: 4;
+    -fx-padding: 5 8;
+} 
