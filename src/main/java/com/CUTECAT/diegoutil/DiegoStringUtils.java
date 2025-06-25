@@ -1,4 +1,6 @@
-package diegoutil;
+package com.CUTECAT.diegoutil;
+
+import java.util.ArrayList;
 
 public class DiegoStringUtils {
 
@@ -32,5 +34,16 @@ public class DiegoStringUtils {
 
     public static String ToString(Object x) {
         return String.valueOf(x);
+    }
+
+    public static String toCsv(ArrayList<Integer> list) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i));
+            if (i < list.size() - 1) {
+                sb.append(',');
+            }
+        }
+        return sb.toString();
     }
 }
