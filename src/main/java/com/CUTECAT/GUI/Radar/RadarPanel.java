@@ -29,13 +29,13 @@ public class RadarPanel extends Pane {
         radius = 200;
 
         // Zufällig ein paar Objekte auf dem Radar platzieren
-        /*for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             double objAngle = random.nextDouble() * 360;
             double objRadius = random.nextDouble() * radius;
             double x = centerX + objRadius * Math.cos(Math.toRadians(objAngle));
             double y = centerY + objRadius * Math.sin(Math.toRadians(objAngle));
             objects.add(new double[]{x, y});
-        }*/
+        }
     }
 
     public void startScanning() {

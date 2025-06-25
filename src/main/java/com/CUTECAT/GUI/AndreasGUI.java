@@ -1,10 +1,14 @@
 package com.CUTECAT.GUI;
 
-import com.CUTECAT.app.CUTECAT;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.layout.Pane;
+import src.main.mjpeg.MjpegMain;
+
+import java.io.FileInputStream;
 
 public class AndreasGUI {
 
@@ -19,7 +23,7 @@ public class AndreasGUI {
         Label1a.getStyleClass().add("styled-titel");
         Label1a.setMinWidth(1300);
         Label1a.setMaxWidth(1300);
-        Label1a.setFont(new Font("Ravie", 40));
+        Label1a.setFont(new Font("Arial", 40));
         Label1a.setLayoutX(0);
         Label1a.setLayoutY(50);
 
@@ -36,7 +40,7 @@ public class AndreasGUI {
         Label1b.setMaxWidth(650);
         Label1b.setLayoutX(1300);
         Label1b.setLayoutY(50);
-        Label1b.setFont(new Font("Ravie",40));
+        Label1b.setFont(new Font("Arial",40));
 
         content.getChildren().addAll(
                 Label1b);
@@ -124,7 +128,7 @@ public class AndreasGUI {
         Label2a.setPrefWidth(1950);
         Label2a.setLayoutX(0);
         Label2a.setLayoutY(50);
-        Label2a.setFont(new Font("Ravie",40));
+        Label2a.setFont(new Font("Arial",40));
 
         content2.getChildren().addAll(
                 Label2a);
@@ -218,11 +222,23 @@ public class AndreasGUI {
         Label2f.getStyleClass().add("styled-label-a");
         Label2f.setMinWidth(200);
         Label2f.setMaxWidth(200);
-        Label2f.setLayoutX(600);
+        Label2f.setLayoutX(630);
         Label2f.setLayoutY(600);
         Label2f.setFont(new Font("Arial",22));
         content2.getChildren().addAll(
                 Label2f);
+
+        //Wertangabe
+        Label Label2f2 = new Label();
+        Label2f2.setText("30");
+        Label2f2.getStyleClass().add("styled-label-a");
+        Label2f2.setMinWidth(100);
+        Label2f2.setMaxWidth(100);
+        Label2f2.setLayoutX(850);
+        Label2f2.setLayoutY(600);
+        Label2f2.setFont(new Font("Arial",22));
+        content2.getChildren().addAll(
+                Label2f2);
 
 
         //Informationen zur steuerung
@@ -267,12 +283,31 @@ public class AndreasGUI {
 
         content2.getChildren().addAll(slider);
 
+        Button Abschluss2 = new Button("Abschluss");
+        Abschluss2.getStyleClass().add("styled-button-abschluss");
+        Abschluss2.setMinWidth(300);
+        Abschluss2.setMaxWidth(300);
+        Abschluss2.setLayoutX(1400);
+        Abschluss2.setLayoutY(650);
+        Abschluss2.setFont(new Font("Arial",22));
+        content2.getChildren().addAll(Abschluss2);
+
         radar.RadarPanel rp = new radar.RadarPanel();
         rp.startScanning();
         rp.setLayoutX(600);
         rp.setLayoutY(150);
 
         content2.getChildren().addAll(rp);
+
+        /*FileInputStream input = new FileInputStream(MjpegMain.main());
+        Image image = new Image(input);
+        ImageView imageView = new ImageView(image);
+
+        HBox hbox = new HBox(imageView);
+        hbox.setLayoutX(1000);
+        hbox.setLayoutY(250);
+        hbox.setPrefSize(500, 400);
+        content2.getChildren().addAll(hbox);*/
 
 
     }
@@ -285,7 +320,7 @@ public class AndreasGUI {
         Label3a.setPrefWidth(1950);
         Label3a.setLayoutX(0);
         Label3a.setLayoutY(50);
-        Label3a.setFont(new Font("Ravie",40));
+        Label3a.setFont(new Font("Arial",40));
 
         content3.getChildren().addAll(
                 Label3a);
@@ -378,13 +413,25 @@ public class AndreasGUI {
         VBox Entfernung = createSection1("Entfernung");
         Label Label3f = new Label("Entfernung in m");
         Label3f.getStyleClass().add("styled-label-a");
-        Label3f.setMinWidth(300);
-        Label3f.setMaxWidth(300);
-        Label3f.setLayoutX(600);
-        Label3f.setLayoutY(500);
+        Label3f.setMinWidth(200);
+        Label3f.setMaxWidth(200);
+        Label3f.setLayoutX(630);
+        Label3f.setLayoutY(600);
         Label3f.setFont(new Font("Arial",22));
         content3.getChildren().addAll(
                 Label3f);
+
+        //Wertangabe
+        Label Label3f2 = new Label();
+        Label3f2.setText("30");
+        Label3f2.getStyleClass().add("styled-label-a");
+        Label3f2.setMinWidth(100);
+        Label3f2.setMaxWidth(100);
+        Label3f2.setLayoutX(850);
+        Label3f2.setLayoutY(600);
+        Label3f2.setFont(new Font("Arial",22));
+        content3.getChildren().addAll(
+                Label3f2);
 
         //Informationen zur steuerung
         String [][] steuerung ={
@@ -418,13 +465,20 @@ public class AndreasGUI {
         }
 
         Button Abschluss = new Button("Abschluss");
-        Abschluss.getStyleClass().add("styled-text-field");
+        Abschluss.getStyleClass().add("styled-button-abschluss");
         Abschluss.setMinWidth(300);
         Abschluss.setMaxWidth(300);
         Abschluss.setLayoutX(1400);
         Abschluss.setLayoutY(650);
         Abschluss.setFont(new Font("Arial",22));
         content3.getChildren().addAll(Abschluss);
+
+        radar.RadarPanel rp2 = new radar.RadarPanel();
+        rp2.startScanning();
+        rp2.setLayoutX(600);
+        rp2.setLayoutY(150);
+
+        content3.getChildren().addAll(rp2);
 
 
     }
@@ -439,7 +493,7 @@ public class AndreasGUI {
         Label4a.setPrefWidth(1950);
         Label4a.setLayoutX(0);
         Label4a.setLayoutY(50);
-        Label4a.setFont(new Font("Ravie",40));
+        Label4a.setFont(new Font("Arial",40));
 
         content4.getChildren().addAll(
                 Label4a);
@@ -529,26 +583,45 @@ public class AndreasGUI {
         content4.getChildren().addAll(
                 Label4b, Label4b2, Label4c, Label4c2, Label4d, Label4d2, Label4e, Label4e2);
 
-        VBox Entfernung = createSection1("Entfernung");
+
         Label Label4f = new Label("Entfernung in m");
         Label4f.getStyleClass().add("styled-label-a");
-        Label4f.setMinWidth(300);
-        Label4f.setMaxWidth(300);
-        Label4f.setLayoutX(600);
-        Label4f.setLayoutY(500);
+        Label4f.setMinWidth(200);
+        Label4f.setMaxWidth(200);
+        Label4f.setLayoutX(630);
+        Label4f.setLayoutY(600);
         Label4f.setFont(new Font("Arial",22));
         content4.getChildren().addAll(
                 Label4f);
 
+        //Wertangabe
+        Label Label4f2 = new Label();
+        Label4f2.setText("30");
+        Label4f2.getStyleClass().add("styled-label-a");
+        Label4f2.setMinWidth(100);
+        Label4f2.setMaxWidth(100);
+        Label4f2.setLayoutX(850);
+        Label4f2.setLayoutY(600);
+        Label4f2.setFont(new Font("Arial",22));
+        content4.getChildren().addAll(
+                Label4f2);
 
-        Button Abschluss2 = new Button("Abschluss");
+
+        /*Button Abschluss2 = new Button("Abschluss");
         Abschluss2.getStyleClass().add("styled-text-field");
         Abschluss2.setMinWidth(300);
         Abschluss2.setMaxWidth(300);
         Abschluss2.setLayoutX(1400);
         Abschluss2.setLayoutY(650);
         Abschluss2.setFont(new Font("Arial",22));
-        content4.getChildren().addAll(Abschluss2);
+        content4.getChildren().addAll(Abschluss2);*/
+
+        radar.RadarPanel rp3 = new radar.RadarPanel();
+        rp3.startScanning();
+        rp3.setLayoutX(600);
+        rp3.setLayoutY(150);
+
+        content4.getChildren().addAll(rp3);
 
 
     }
