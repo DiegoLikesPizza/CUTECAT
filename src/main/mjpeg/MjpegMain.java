@@ -9,7 +9,7 @@ public class MjpegMain {
 	public static void main(String[] args) {
         try {
         	//Connect via url and open up the input-stream
-    		String url = "http://ip:81/stream";
+    		String url = "http://172.16.11.207:81/stream";
 			InputStream input = new URL(url).openStream();
 			
 			//start the receiver
