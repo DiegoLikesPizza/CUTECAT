@@ -7,8 +7,14 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.layout.Pane;
 import src.main.mjpeg.MjpegMain;
+import src.main.mjpeg.MjpegReceiver;
 
+import javax.imageio.stream.FileImageInputStream;
 import java.io.FileInputStream;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class AndreasGUI {
 
@@ -19,7 +25,7 @@ public class AndreasGUI {
         //Headline links
         VBox HeadlControls = createSection("Headline links");
 
-        Label Label1a = new Label("   CUTECAT");
+        Label Label1a = new Label(" CUTECAT");
         Label1a.getStyleClass().add("styled-titel");
         Label1a.setMinWidth(1300);
         Label1a.setMaxWidth(1300);
@@ -41,13 +47,13 @@ public class AndreasGUI {
         Label1b.setLayoutX(1300);
         Label1b.setLayoutY(50);
         Label1b.setFont(new Font("Arial",40));
-
         content.getChildren().addAll(
                 Label1b);
 
         /*//Buttons mit verschiedenen Modi
         VBox Modi = createSection("Modi");
         Button b1 = new Button("Ferngesteuerter Modus");
+
         //Style button
         b1.getStyleClass().add("styled-button-a");
         b1.setPrefSize(600,150);
@@ -247,8 +253,8 @@ public class AndreasGUI {
                 {"S","Rückwärts"},
                 {"A","Links"},
                 {"D","Rechts"},
-                {"→","Turm rechts"},
                 {"←","Turm links"},
+                {"→","Turm rechts"},
                 {"↑","Rohr neigen"},
                 {"↓","Rohr senken"},
         };
@@ -272,7 +278,7 @@ public class AndreasGUI {
             content2.getChildren().addAll(taste, funktion);
         }
 
-        Slider slider = new Slider(0, 100, 50);
+        Slider slider = new Slider(0, 100, 20);
         slider.getStyleClass().add("styled-slider");
         slider.setLayoutX(1300);
         slider.setLayoutY(800);
@@ -299,7 +305,7 @@ public class AndreasGUI {
 
         content2.getChildren().addAll(rp);
 
-        /*FileInputStream input = new FileInputStream(MjpegMain.main());
+        /*FileInputStream input= new FileInputStream(main());
         Image image = new Image(input);
         ImageView imageView = new ImageView(image);
 
@@ -439,8 +445,8 @@ public class AndreasGUI {
                 {"S","Rückwärts"},
                 {"A","Links"},
                 {"D","Rechts"},
-                {"→","Turm rechts"},
                 {"←","Turm links"},
+                {"→","Turm rechts"},
                 {"↑","Rohr neigen"},
                 {"↓","Rohr senken"},
         };
@@ -653,4 +659,24 @@ public class AndreasGUI {
         return section;
     }
 
-}
+
+
+        public static void main() {
+            try {
+                //Connect via url and open up the input-stream
+                String url = "http://172.16.11.207:81/stream";
+                InputStream input = new URL(url).openStream();
+
+                //start the receiver
+                MjpegReceiver MjpegRe = new MjpegReceiver(input);
+                Thread t1 = new Thread(MjpegRe);
+                t1.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+
