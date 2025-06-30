@@ -1,11 +1,13 @@
 package com.CUTECAT.GUI;
 
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.layout.Pane;
+import src.main.mjpeg.FXMjpegViewer;
 import src.main.mjpeg.MjpegMain;
 import src.main.mjpeg.MjpegReceiver;
 
@@ -18,12 +20,28 @@ import java.net.URL;
 
 public class AndreasGUI {
 
+    @FXML
+    private ImageView cameraImageView;
+    private Thread mjpegThread;
+
+    @FXML
+    public void initialize() {
+        try{
+            String url = "http://172.16.11.207:81/stream";
+            InputStream input = new URL(url).openStream();
+            FXMjpegViewer fxViewer = new FXMjpegViewer(cameraImageView);
+            MjpegReceiver receiver = new MjpegReceiver(input, fxViewer);
+            mjpegThread = new Thread(receiver);
+            mjpegThread.setDaemon(true);
+            mjpegThread.start();
+        }
+        catch (Exception e){
+        e.printStackTrace();
+    }
+
+    public static void addWidgets(Pane content) {
 
 
-    public static void addWidgets(Pane content){
-
-        //Headline links
-        VBox HeadlControls = createSection("Headline links");
 
         Label Label1a = new Label(" CUTECAT");
         Label1a.getStyleClass().add("styled-titel");
@@ -37,8 +55,7 @@ public class AndreasGUI {
         content.getChildren().addAll(
                 Label1a);
 
-        //Headline rechts
-        VBox HeadrControls = createSection("Headline rechts");
+
 
         Label Label1b = new Label("Gymnasium Beilngries");
         Label1b.getStyleClass().add("styled-titel");
@@ -46,7 +63,7 @@ public class AndreasGUI {
         Label1b.setMaxWidth(650);
         Label1b.setLayoutX(1300);
         Label1b.setLayoutY(50);
-        Label1b.setFont(new Font("Arial",40));
+        Label1b.setFont(new Font("Arial", 40));
         content.getChildren().addAll(
                 Label1b);
 
@@ -90,7 +107,7 @@ public class AndreasGUI {
         //b4.setStyle("-fx-border-style: solid;");
         b4.setStyle("-fx-text-fill: #0a0000");
         b4.setStyle("-fx-font-size: 20px;");
-        b4.setPrefSize(200,100);
+        b4.setPrefSize(200, 100);
         b4.setLayoutX(200);
         b4.setLayoutY(850);
 
@@ -103,7 +120,7 @@ public class AndreasGUI {
         //b5.setStyle("-fx-border-style: solid;");
         b5.setStyle("-fx-text-fill: #0a0000");
         b5.setStyle("-fx-font-size: 20px;");
-        b5.setPrefSize(200,100);
+        b5.setPrefSize(200, 100);
         b5.setLayoutX(500);
         b5.setLayoutY(850);
 
@@ -114,18 +131,17 @@ public class AndreasGUI {
         //b6.setStyle("-fx-border-style: solid;");
         b6.setStyle("-fx-text-fill: #0a0000");
         b6.setStyle("-fx-font-size: 20px;");
-        b6.setPrefSize(200,100);
+        b6.setPrefSize(200, 100);
         b6.setLayoutX(800);
         b6.setLayoutY(850);
 
         content.getChildren().addAll(b4, b5, b6);
 
 
-
     }
 
     //Ferngesteuerter Modus
-    public static void addWidgets2(Pane content2){
+    public static void addWidgets2(Pane content2) {
         //Headline
         VBox HeadControls2 = createSection("Headline");
 
@@ -134,7 +150,7 @@ public class AndreasGUI {
         Label2a.setPrefWidth(1950);
         Label2a.setLayoutX(0);
         Label2a.setLayoutY(50);
-        Label2a.setFont(new Font("Arial",40));
+        Label2a.setFont(new Font("Arial", 40));
 
         content2.getChildren().addAll(
                 Label2a);
@@ -148,7 +164,7 @@ public class AndreasGUI {
         Label2b.setMaxWidth(300);
         Label2b.setLayoutX(50);
         Label2b.setLayoutY(200);
-        Label2b.setFont(new Font("Arial",22));
+        Label2b.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label2b2 = new Label();
@@ -158,7 +174,7 @@ public class AndreasGUI {
         Label2b2.setMaxWidth(100);
         Label2b2.setLayoutX(370);
         Label2b2.setLayoutY(200);
-        Label2b2.setFont(new Font("Arial",22));
+        Label2b2.setFont(new Font("Arial", 22));
 
 
         //Neigung Rohr
@@ -168,7 +184,7 @@ public class AndreasGUI {
         Label2c.setMaxWidth(300);
         Label2c.setLayoutX(50);
         Label2c.setLayoutY(300);
-        Label2c.setFont(new Font("Arial",22));
+        Label2c.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label2c2 = new Label();
@@ -178,7 +194,7 @@ public class AndreasGUI {
         Label2c2.setMaxWidth(100);
         Label2c2.setLayoutX(370);
         Label2c2.setLayoutY(300);
-        Label2c2.setFont(new Font("Arial",22));
+        Label2c2.setFont(new Font("Arial", 22));
 
 
         //Munition
@@ -188,7 +204,7 @@ public class AndreasGUI {
         Label2d.setMaxWidth(300);
         Label2d.setLayoutX(50);
         Label2d.setLayoutY(400);
-        Label2d.setFont(new Font("Arial",22));
+        Label2d.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label2d2 = new Label();
@@ -198,7 +214,7 @@ public class AndreasGUI {
         Label2d2.setMaxWidth(100);
         Label2d2.setLayoutX(370);
         Label2d2.setLayoutY(400);
-        Label2d2.setFont(new Font("Arial",22));
+        Label2d2.setFont(new Font("Arial", 22));
 
 
         //Gasdruck
@@ -208,7 +224,7 @@ public class AndreasGUI {
         Label2e.setMaxWidth(300);
         Label2e.setLayoutX(50);
         Label2e.setLayoutY(500);
-        Label2e.setFont(new Font("Arial",22));
+        Label2e.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label2e2 = new Label();
@@ -218,7 +234,7 @@ public class AndreasGUI {
         Label2e2.setMaxWidth(100);
         Label2e2.setLayoutX(370);
         Label2e2.setLayoutY(500);
-        Label2e2.setFont(new Font("Arial",22));
+        Label2e2.setFont(new Font("Arial", 22));
 
 
         content2.getChildren().addAll(
@@ -230,7 +246,7 @@ public class AndreasGUI {
         Label2f.setMaxWidth(200);
         Label2f.setLayoutX(630);
         Label2f.setLayoutY(600);
-        Label2f.setFont(new Font("Arial",22));
+        Label2f.setFont(new Font("Arial", 22));
         content2.getChildren().addAll(
                 Label2f);
 
@@ -242,23 +258,23 @@ public class AndreasGUI {
         Label2f2.setMaxWidth(100);
         Label2f2.setLayoutX(850);
         Label2f2.setLayoutY(600);
-        Label2f2.setFont(new Font("Arial",22));
+        Label2f2.setFont(new Font("Arial", 22));
         content2.getChildren().addAll(
                 Label2f2);
 
 
         //Informationen zur steuerung
-        String [][] steuerung ={
-                {"W","Vorwärts"},
-                {"S","Rückwärts"},
-                {"A","Links"},
-                {"D","Rechts"},
-                {"←","Turm links"},
-                {"→","Turm rechts"},
-                {"↑","Rohr neigen"},
-                {"↓","Rohr senken"},
+        String[][] steuerung = {
+                {"W", "Vorwärts"},
+                {"S", "Rückwärts"},
+                {"A", "Links"},
+                {"D", "Rechts"},
+                {"←", "Turm links"},
+                {"→", "Turm rechts"},
+                {"↑", "Rohr neigen"},
+                {"↓", "Rohr senken"},
         };
-        for (int i =0;i<steuerung.length;i++) {
+        for (int i = 0; i < steuerung.length; i++) {
             Label taste = new Label(steuerung[i][0]);
             taste.getStyleClass().add("styled-text-field");
             taste.setMinWidth(100);
@@ -295,7 +311,7 @@ public class AndreasGUI {
         Abschluss2.setMaxWidth(300);
         Abschluss2.setLayoutX(1400);
         Abschluss2.setLayoutY(650);
-        Abschluss2.setFont(new Font("Arial",22));
+        Abschluss2.setFont(new Font("Arial", 22));
         content2.getChildren().addAll(Abschluss2);
 
         radar.RadarPanel rp = new radar.RadarPanel();
@@ -305,28 +321,21 @@ public class AndreasGUI {
 
         content2.getChildren().addAll(rp);
 
-        /*FileInputStream input= new FileInputStream(main());
-        Image image = new Image(input);
-        ImageView imageView = new ImageView(image);
 
-        HBox hbox = new HBox(imageView);
-        hbox.setLayoutX(1000);
-        hbox.setLayoutY(250);
-        hbox.setPrefSize(500, 400);
-        content2.getChildren().addAll(hbox);*/
+
 
 
     }
 
     //Halbautomatischer Modus
-    public static void addWidgets3(Pane content3){
+    public static void addWidgets3(Pane content3) {
         //Headline
         Label Label3a = new Label("Halbautomatischer Modus");
         Label3a.getStyleClass().add("styled-titel");
         Label3a.setPrefWidth(1950);
         Label3a.setLayoutX(0);
         Label3a.setLayoutY(50);
-        Label3a.setFont(new Font("Arial",40));
+        Label3a.setFont(new Font("Arial", 40));
 
         content3.getChildren().addAll(
                 Label3a);
@@ -340,7 +349,7 @@ public class AndreasGUI {
         Label3b.setMaxWidth(300);
         Label3b.setLayoutX(50);
         Label3b.setLayoutY(200);
-        Label3b.setFont(new Font("Arial",22));
+        Label3b.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label3b2 = new Label();
@@ -350,7 +359,7 @@ public class AndreasGUI {
         Label3b2.setMaxWidth(100);
         Label3b2.setLayoutX(370);
         Label3b2.setLayoutY(200);
-        Label3b2.setFont(new Font("Arial",22));
+        Label3b2.setFont(new Font("Arial", 22));
 
 
         //Neigung Rohr
@@ -360,7 +369,7 @@ public class AndreasGUI {
         Label3c.setMaxWidth(300);
         Label3c.setLayoutX(50);
         Label3c.setLayoutY(300);
-        Label3c.setFont(new Font("Arial",22));
+        Label3c.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label3c2 = new Label();
@@ -370,7 +379,7 @@ public class AndreasGUI {
         Label3c2.setMaxWidth(100);
         Label3c2.setLayoutX(370);
         Label3c2.setLayoutY(300);
-        Label3c2.setFont(new Font("Arial",22));
+        Label3c2.setFont(new Font("Arial", 22));
 
 
         //Munition
@@ -380,7 +389,7 @@ public class AndreasGUI {
         Label3d.setMaxWidth(300);
         Label3d.setLayoutX(50);
         Label3d.setLayoutY(400);
-        Label3d.setFont(new Font("Arial",22));
+        Label3d.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label3d2 = new Label();
@@ -390,7 +399,7 @@ public class AndreasGUI {
         Label3d2.setMaxWidth(100);
         Label3d2.setLayoutX(370);
         Label3d2.setLayoutY(400);
-        Label3d2.setFont(new Font("Arial",22));
+        Label3d2.setFont(new Font("Arial", 22));
 
 
         //Gasdruck
@@ -400,7 +409,7 @@ public class AndreasGUI {
         Label3e.setMaxWidth(300);
         Label3e.setLayoutX(50);
         Label3e.setLayoutY(500);
-        Label3e.setFont(new Font("Arial",22));
+        Label3e.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label3e2 = new Label();
@@ -410,7 +419,7 @@ public class AndreasGUI {
         Label3e2.setMaxWidth(100);
         Label3e2.setLayoutX(370);
         Label3e2.setLayoutY(500);
-        Label3e2.setFont(new Font("Arial",22));
+        Label3e2.setFont(new Font("Arial", 22));
 
 
         content3.getChildren().addAll(
@@ -423,7 +432,7 @@ public class AndreasGUI {
         Label3f.setMaxWidth(200);
         Label3f.setLayoutX(630);
         Label3f.setLayoutY(600);
-        Label3f.setFont(new Font("Arial",22));
+        Label3f.setFont(new Font("Arial", 22));
         content3.getChildren().addAll(
                 Label3f);
 
@@ -435,37 +444,37 @@ public class AndreasGUI {
         Label3f2.setMaxWidth(100);
         Label3f2.setLayoutX(850);
         Label3f2.setLayoutY(600);
-        Label3f2.setFont(new Font("Arial",22));
+        Label3f2.setFont(new Font("Arial", 22));
         content3.getChildren().addAll(
                 Label3f2);
 
         //Informationen zur steuerung
-        String [][] steuerung ={
-                {"W","Vorwärts"},
-                {"S","Rückwärts"},
-                {"A","Links"},
-                {"D","Rechts"},
-                {"←","Turm links"},
-                {"→","Turm rechts"},
-                {"↑","Rohr neigen"},
-                {"↓","Rohr senken"},
+        String[][] steuerung = {
+                {"W", "Vorwärts"},
+                {"S", "Rückwärts"},
+                {"A", "Links"},
+                {"D", "Rechts"},
+                {"←", "Turm links"},
+                {"→", "Turm rechts"},
+                {"↑", "Rohr neigen"},
+                {"↓", "Rohr senken"},
         };
-        for (int i =0;i<steuerung.length;i++){
+        for (int i = 0; i < steuerung.length; i++) {
             Label taste = new Label(steuerung[i][0]);
             taste.getStyleClass().add("styled-text-field");
             taste.setMinWidth(100);
             taste.setMaxWidth(100);
-            taste.setLayoutX(100+i*150);
+            taste.setLayoutX(100 + i * 150);
             taste.setLayoutY(800);
-            taste.setFont(new Font("Arial",18));
+            taste.setFont(new Font("Arial", 18));
 
             Label funktion = new Label(steuerung[i][1]);
             funktion.getStyleClass().add("styled-text-field");
             funktion.setMinWidth(100);
             funktion.setMaxWidth(100);
-            funktion.setLayoutX(100+i*150);
+            funktion.setLayoutX(100 + i * 150);
             funktion.setLayoutY(850);
-            funktion.setFont(new Font("Arial",14));
+            funktion.setFont(new Font("Arial", 14));
 
             content3.getChildren().addAll(taste, funktion);
         }
@@ -476,7 +485,7 @@ public class AndreasGUI {
         Abschluss.setMaxWidth(300);
         Abschluss.setLayoutX(1400);
         Abschluss.setLayoutY(650);
-        Abschluss.setFont(new Font("Arial",22));
+        Abschluss.setFont(new Font("Arial", 22));
         content3.getChildren().addAll(Abschluss);
 
         radar.RadarPanel rp2 = new radar.RadarPanel();
@@ -490,16 +499,15 @@ public class AndreasGUI {
     }
 
 
-
     //Vollautomatischer Modus
-    public static void addWidgets4(Pane content4){
+    public static void addWidgets4(Pane content4) {
         //Headline
         Label Label4a = new Label("Vollautomatischer Modus");
         Label4a.getStyleClass().add("styled-titel");
         Label4a.setPrefWidth(1950);
         Label4a.setLayoutX(0);
         Label4a.setLayoutY(50);
-        Label4a.setFont(new Font("Arial",40));
+        Label4a.setFont(new Font("Arial", 40));
 
         content4.getChildren().addAll(
                 Label4a);
@@ -513,7 +521,7 @@ public class AndreasGUI {
         Label4b.setMaxWidth(300);
         Label4b.setLayoutX(50);
         Label4b.setLayoutY(200);
-        Label4b.setFont(new Font("Arial",22));
+        Label4b.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label4b2 = new Label();
@@ -523,7 +531,7 @@ public class AndreasGUI {
         Label4b2.setMaxWidth(100);
         Label4b2.setLayoutX(370);
         Label4b2.setLayoutY(200);
-        Label4b2.setFont(new Font("Arial",22));
+        Label4b2.setFont(new Font("Arial", 22));
 
 
         //Neigung Rohr
@@ -533,7 +541,7 @@ public class AndreasGUI {
         Label4c.setMaxWidth(300);
         Label4c.setLayoutX(50);
         Label4c.setLayoutY(300);
-        Label4c.setFont(new Font("Arial",22));
+        Label4c.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label4c2 = new Label();
@@ -543,7 +551,7 @@ public class AndreasGUI {
         Label4c2.setMaxWidth(100);
         Label4c2.setLayoutX(370);
         Label4c2.setLayoutY(300);
-        Label4c2.setFont(new Font("Arial",22));
+        Label4c2.setFont(new Font("Arial", 22));
 
 
         //Munition
@@ -553,7 +561,7 @@ public class AndreasGUI {
         Label4d.setMaxWidth(300);
         Label4d.setLayoutX(50);
         Label4d.setLayoutY(400);
-        Label4d.setFont(new Font("Arial",22));
+        Label4d.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label4d2 = new Label();
@@ -563,7 +571,7 @@ public class AndreasGUI {
         Label4d2.setMaxWidth(100);
         Label4d2.setLayoutX(370);
         Label4d2.setLayoutY(400);
-        Label4d2.setFont(new Font("Arial",22));
+        Label4d2.setFont(new Font("Arial", 22));
 
 
         //Gasdruck
@@ -573,7 +581,7 @@ public class AndreasGUI {
         Label4e.setMaxWidth(300);
         Label4e.setLayoutX(50);
         Label4e.setLayoutY(500);
-        Label4e.setFont(new Font("Arial",22));
+        Label4e.setFont(new Font("Arial", 22));
 
         //Wertangabe
         Label Label4e2 = new Label();
@@ -583,7 +591,7 @@ public class AndreasGUI {
         Label4e2.setMaxWidth(100);
         Label4e2.setLayoutX(370);
         Label4e2.setLayoutY(500);
-        Label4e2.setFont(new Font("Arial",22));
+        Label4e2.setFont(new Font("Arial", 22));
 
 
         content4.getChildren().addAll(
@@ -596,7 +604,7 @@ public class AndreasGUI {
         Label4f.setMaxWidth(200);
         Label4f.setLayoutX(630);
         Label4f.setLayoutY(600);
-        Label4f.setFont(new Font("Arial",22));
+        Label4f.setFont(new Font("Arial", 22));
         content4.getChildren().addAll(
                 Label4f);
 
@@ -608,7 +616,7 @@ public class AndreasGUI {
         Label4f2.setMaxWidth(100);
         Label4f2.setLayoutX(850);
         Label4f2.setLayoutY(600);
-        Label4f2.setFont(new Font("Arial",22));
+        Label4f2.setFont(new Font("Arial", 22));
         content4.getChildren().addAll(
                 Label4f2);
 
@@ -659,24 +667,7 @@ public class AndreasGUI {
         return section;
     }
 
-
-
-        public static void main() {
-            try {
-                //Connect via url and open up the input-stream
-                String url = "http://172.16.11.207:81/stream";
-                InputStream input = new URL(url).openStream();
-
-                //start the receiver
-                MjpegReceiver MjpegRe = new MjpegReceiver(input);
-                Thread t1 = new Thread(MjpegRe);
-                t1.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
+}
 
 
 

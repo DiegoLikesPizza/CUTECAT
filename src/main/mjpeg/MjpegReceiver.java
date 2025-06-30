@@ -13,21 +13,23 @@ public class MjpegReceiver extends DataInputStream implements Runnable {
     private byte[] frameData = new byte[maxFrameLength];
     private int frameContentLength = -1;
     private int headerLenPrev = -1;
-    private MjpegViewer imageView = new MjpegViewer();
 
-    public MjpegReceiver(InputStream in) {
+	private final FXMjpegViewer fxViewer;
+
+    public MjpegReceiver(InputStream in, FXMjpegViewer fxViewer) {
         super(new BufferedInputStream(in, maxFrameLength));
+		this.fxViewer = fxViewer;
     }
     
 	@Override
 	public void run() {
-		do {
+		while (true) {
 			try {
 				readMjpegFrame();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}while(true);
+		}
 	}
         
 	 public int readMjpegFrame() throws IOException {
@@ -60,7 +62,9 @@ public class MjpegReceiver extends DataInputStream implements Runnable {
 	        readFully(frameData, 0, frameContentLength);//reads the bytes of length 'frameContentLength' into 'frameData'
 
 	        BufferedImage image = ImageIO.read( new ByteArrayInputStream( frameData ));
-	        imageView.setImage(image);
+	        if(image!=null) {
+				fxViewer.setImage(image);
+			}
 	        return 0;
 	    }
 
@@ -77,7 +81,7 @@ public class MjpegReceiver extends DataInputStream implements Runnable {
                     return ((i + 1) - sequence.length);
                 }
             } else {
-            	streamByte = 0;
+            	streamIndex = 0;
             }
         }
         return -1;
