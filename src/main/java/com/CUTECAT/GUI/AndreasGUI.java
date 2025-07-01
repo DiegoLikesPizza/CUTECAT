@@ -8,7 +8,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.layout.Pane;
 import src.main.mjpeg.FXMjpegViewer;
-import src.main.mjpeg.MjpegMain;
+//import src.main.mjpeg.MjpegMain;
 import src.main.mjpeg.MjpegReceiver;
 
 import javax.imageio.stream.FileImageInputStream;
@@ -21,15 +21,15 @@ import java.net.URL;
 public class AndreasGUI {
 
     @FXML
-    private ImageView cameraImageView;
+    private ImageView cameraView;
     private Thread mjpegThread;
 
     @FXML
-    public void initialize() {
+    public void startCameraStream(){
         try{
             String url = "http://172.16.11.207:81/stream";
             InputStream input = new URL(url).openStream();
-            FXMjpegViewer fxViewer = new FXMjpegViewer(cameraImageView);
+            FXMjpegViewer fxViewer = new FXMjpegViewer(cameraView);
             MjpegReceiver receiver = new MjpegReceiver(input, fxViewer);
             mjpegThread = new Thread(receiver);
             mjpegThread.setDaemon(true);
@@ -37,7 +37,7 @@ public class AndreasGUI {
         }
         catch (Exception e){
         e.printStackTrace();
-    }
+    }}
 
     public static void addWidgets(Pane content) {
 
@@ -67,38 +67,6 @@ public class AndreasGUI {
         content.getChildren().addAll(
                 Label1b);
 
-        /*//Buttons mit verschiedenen Modi
-        VBox Modi = createSection("Modi");
-        Button b1 = new Button("Ferngesteuerter Modus");
-
-        //Style button
-        b1.getStyleClass().add("styled-button-a");
-        b1.setPrefSize(600,150);
-        b1.setLayoutX(1200);
-        b1.setLayoutY(200);
-
-
-        Button b2 = new Button("Modus 2");
-        //Style button
-        b2.getStyleClass().add("styled-button-a");
-        b2.setPrefSize(600,150);
-        b2.setLayoutX(1200);
-        b2.setLayoutY(400);
-
-
-        Button b3 = new Button("Modus 3");
-        //Style button
-        b3.getStyleClass().add("styled-button-a");
-        b3.setPrefSize(600,150);
-        b3.setLayoutX(1200);
-        b3.setLayoutY(600);
-
-
-
-        content.getChildren().addAll(
-                  b1, b2, b3
-
-        );*/
 
         Button b4 = new Button("Infos");
         //Style button
@@ -142,8 +110,7 @@ public class AndreasGUI {
 
     //Ferngesteuerter Modus
     public static void addWidgets2(Pane content2) {
-        //Headline
-        VBox HeadControls2 = createSection("Headline");
+
 
         Label Label2a = new Label("Ferngesteuerter Modus");
         Label2a.getStyleClass().add("styled-titel");
@@ -320,6 +287,28 @@ public class AndreasGUI {
         rp.setLayoutY(150);
 
         content2.getChildren().addAll(rp);
+
+        ImageView camera = new ImageView();
+        camera.setLayoutX(1400);
+        camera.setLayoutY(300);
+        camera.setFitWidth(400);
+        camera.setFitHeight(300);
+        camera.setPreserveRatio(true);
+
+        content2.getChildren().add(camera);
+
+        try {
+            String url = "http://172.16.11.207:81/stream";
+            InputStream input = new URL(url).openStream();
+            FXMjpegViewer fxViewer = new FXMjpegViewer(camera);
+            MjpegReceiver receiver = new MjpegReceiver(input, fxViewer);
+            Thread mjpegThread = new Thread(receiver);
+            mjpegThread.setDaemon(true);
+            mjpegThread.start();
+        } catch (Exception e) {
+            System.err.println("Fehler");
+            e.printStackTrace();
+        }
 
 
 

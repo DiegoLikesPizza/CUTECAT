@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Properties;
+import src.main.mjpeg.FXMjpegViewer;
 
 public class MjpegReceiver extends DataInputStream implements Runnable {
     private static String TAG = "MJPEG_Receiver";
@@ -14,7 +15,7 @@ public class MjpegReceiver extends DataInputStream implements Runnable {
     private int frameContentLength = -1;
     private int headerLenPrev = -1;
 
-	private final FXMjpegViewer fxViewer;
+	private final src.main.mjpeg.FXMjpegViewer fxViewer;
 
     public MjpegReceiver(InputStream in, FXMjpegViewer fxViewer) {
         super(new BufferedInputStream(in, maxFrameLength));
