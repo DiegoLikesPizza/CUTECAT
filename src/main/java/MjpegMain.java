@@ -1,4 +1,4 @@
-package src.main.mjpeg;
+/*package src.main.mjpeg;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ public class MjpegMain {
 			InputStream input = new URL(url).openStream();
 			
 			//start the receiver
-			MjpegReceiver MjpegRe = new MjpegReceiver(input);
+			src.main.mjpeg.MjpegReceiver MjpegRe = new src.main.mjpeg.MjpegReceiver(input);
 			Thread t1 = new Thread(MjpegRe);
 			t1.start();
 		} catch (IOException e) {
@@ -21,4 +21,4 @@ public class MjpegMain {
 		}
 	}
 
-}
+}*/

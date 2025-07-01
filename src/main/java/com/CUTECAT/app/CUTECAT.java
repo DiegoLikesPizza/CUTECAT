@@ -64,7 +64,7 @@ public class CUTECAT extends Application {
         content4.getStyleClass().add("content-area");
 
         // Add widgets
-        AndreasGUI.addWidgets(content);
+        //AndreasGUI.addWidgets(content);
         AndreasGUI.addWidgets2(content2);
         AndreasGUI.addWidgets3(content3);
         AndreasGUI.addWidgets4(content4);
@@ -80,13 +80,13 @@ public class CUTECAT extends Application {
         tabPane.setLayoutX(0);
         tabPane.setLayoutY(20);
         tabPane.getStyleClass().add("styled-tab-pane");
-        Tab tab1 = new Tab("Home              ");
-        tab1.setContent(content);
+        //Tab tab1 = new Tab("Home              ");
+        //tab1.setContent(content);
 
         Tab tab2 = new Tab("Ferngesteuerter Modus");
         tab2.setContent(content2);
         // Closeable tabs (default)
-        tab1.setClosable(true);
+        //tab1.setClosable(true);
         tab2.setClosable(true);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
@@ -101,7 +101,7 @@ public class CUTECAT extends Application {
         tab4.setClosable(true);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
-        tabPane.getTabs().addAll(tab1, tab2, tab3, tab4);
+        tabPane.getTabs().addAll( tab2, tab3, tab4);
 
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
 
