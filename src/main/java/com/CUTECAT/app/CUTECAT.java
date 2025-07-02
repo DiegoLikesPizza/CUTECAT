@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -18,6 +19,8 @@ import javafx.scene.layout.Region;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +39,35 @@ public class CUTECAT extends Application {
 
         // Add custom title bar
         CustomTitleBar titleBar = new CustomTitleBar(primaryStage);
+
+        ImageView camera = new ImageView();
+        camera.setLayoutX(1200);
+        camera.setLayoutY(150);
+        camera.setFitWidth(700);
+        camera.setFitHeight(400);
+        camera.setPreserveRatio(true);
+
+        ImageView camera2 = new ImageView();
+        camera2.setLayoutX(1200);
+        camera2.setLayoutY(150);
+        camera2.setFitWidth(700);
+        camera2.setFitHeight(400);
+        camera2.setPreserveRatio(true);
+
+
+        src.main.mjpeg.FXMjpegViewer fxViewer = new src.main.mjpeg.FXMjpegViewer(camera, camera2);
+
+        try {
+            String url = "http://172.16.11.207:81/stream";
+            InputStream input = new URL(url).openStream();
+            src.main.mjpeg.MjpegReceiver receiver = new src.main.mjpeg.MjpegReceiver(input, fxViewer);
+            Thread mjpegThread = new Thread(receiver);
+            mjpegThread.setDaemon(true);
+            mjpegThread.start();
+        } catch (Exception e) {
+            System.err.println("Fehler");
+            e.printStackTrace();
+        }
         
         // Create content area
         Pane content = new Pane();
@@ -64,9 +96,9 @@ public class CUTECAT extends Application {
         content4.getStyleClass().add("content-area");
 
         // Add widgets
-        //AndreasGUI.addWidgets(content);
-        AndreasGUI.addWidgets2(content2);
-        AndreasGUI.addWidgets3(content3);
+        AndreasGUI.addWidgets(content);
+        AndreasGUI.addWidgets2(content2, camera);
+        AndreasGUI.addWidgets3(content3, camera2);
         AndreasGUI.addWidgets4(content4);
 
 
@@ -80,13 +112,13 @@ public class CUTECAT extends Application {
         tabPane.setLayoutX(0);
         tabPane.setLayoutY(20);
         tabPane.getStyleClass().add("styled-tab-pane");
-        //Tab tab1 = new Tab("Home              ");
-        //tab1.setContent(content);
+        Tab tab1 = new Tab("Home              ");
+        tab1.setContent(content);
 
         Tab tab2 = new Tab("Ferngesteuerter Modus");
         tab2.setContent(content2);
         // Closeable tabs (default)
-        //tab1.setClosable(true);
+        tab1.setClosable(true);
         tab2.setClosable(true);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
@@ -101,7 +133,7 @@ public class CUTECAT extends Application {
         tab4.setClosable(true);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
-        tabPane.getTabs().addAll( tab2, tab3, tab4);
+        tabPane.getTabs().addAll(tab1,   tab2, tab3, tab4);
 
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
 

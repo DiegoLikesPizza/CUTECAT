@@ -1,8 +1,8 @@
 package com.CUTECAT.GUI;
 
+import com.CUTECAT.app.CUTECAT;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -11,18 +11,14 @@ import src.main.mjpeg.FXMjpegViewer;
 //import src.main.mjpeg.MjpegMain;
 import src.main.mjpeg.MjpegReceiver;
 
-import javax.imageio.stream.FileImageInputStream;
-import java.io.FileInputStream;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 public class AndreasGUI {
 
     @FXML
-    private ImageView cameraView;
-    private Thread mjpegThread;
+    public ImageView cameraView;
+    public Thread mjpegThread;
 
     @FXML
     public void startCameraStream(){
@@ -109,7 +105,7 @@ public class AndreasGUI {
     }
 
     //Ferngesteuerter Modus
-    public static void addWidgets2(Pane content2) {
+    public static void addWidgets2(Pane content2, ImageView camera) {
 
 
         Label Label2a = new Label("Ferngesteuerter Modus");
@@ -288,19 +284,26 @@ public class AndreasGUI {
 
         content2.getChildren().addAll(rp);
 
-        ImageView camera = new ImageView();
-        camera.setLayoutX(1400);
-        camera.setLayoutY(300);
-        camera.setFitWidth(400);
-        camera.setFitHeight(300);
+       /* ImageView camera = new ImageView();
+        camera.setLayoutX(1200);
+        camera.setLayoutY(150);
+        camera.setFitWidth(700);
+        camera.setFitHeight(400);
         camera.setPreserveRatio(true);
 
-        content2.getChildren().add(camera);
+        ImageView camera2 = new ImageView();
+        camera2.setLayoutX(1200);
+        camera2.setLayoutY(150);
+        camera2.setFitWidth(700);
+        camera2.setFitHeight(400);
+        camera2.setPreserveRatio(true);
+
+
+        FXMjpegViewer fxViewer = new FXMjpegViewer(camera, camera2);
 
         try {
             String url = "http://172.16.11.207:81/stream";
             InputStream input = new URL(url).openStream();
-            FXMjpegViewer fxViewer = new FXMjpegViewer(camera);
             MjpegReceiver receiver = new MjpegReceiver(input, fxViewer);
             Thread mjpegThread = new Thread(receiver);
             mjpegThread.setDaemon(true);
@@ -308,8 +311,9 @@ public class AndreasGUI {
         } catch (Exception e) {
             System.err.println("Fehler");
             e.printStackTrace();
-        }
+        }*/
 
+        content2.getChildren().add(camera);
 
 
 
@@ -317,7 +321,7 @@ public class AndreasGUI {
     }
 
     //Halbautomatischer Modus
-    public static void addWidgets3(Pane content3) {
+    public static void addWidgets3(Pane content3, ImageView camera2) {
         //Headline
         Label Label3a = new Label("Halbautomatischer Modus");
         Label3a.getStyleClass().add("styled-titel");
@@ -483,7 +487,7 @@ public class AndreasGUI {
         rp2.setLayoutY(150);
 
         content3.getChildren().addAll(rp2);
-
+        content3.getChildren().add(camera2);
 
     }
 

@@ -64,7 +64,7 @@ public class MjpegReceiver extends DataInputStream implements Runnable {
 
 	        BufferedImage image = ImageIO.read( new ByteArrayInputStream( frameData ));
 	        if(image!=null) {
-				fxViewer.setImage(image);
+				fxViewer.onFrame(image);
 			}
 	        return 0;
 	    }
