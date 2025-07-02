@@ -34,6 +34,10 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
     // Arduino connection parameters
     protected final String arduinoIp;
     protected final int arduinoPort;
+    protected final int cameraPort;
+
+    // Camera parameters
+    protected final String cameraIp;
 
     // UI components
     protected Stage stage;
@@ -77,10 +81,14 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
      * @param parentStage The parent stage
      * @param arduinoIp The IP address of the Arduino
      * @param arduinoPort The port number of the Arduino
+     * @param cameraPort The port number for the camera stream
+     * @param cameraIp The IP address of the camera (if null, uses arduinoIp)
      */
-    public modebase(Stage parentStage, String arduinoIp, int arduinoPort) {
+    public modebase(Stage parentStage, String arduinoIp, int arduinoPort, int cameraPort, String cameraIp) {
         this.arduinoIp = arduinoIp;
         this.arduinoPort = arduinoPort;
+        this.cameraPort = cameraPort;
+        this.cameraIp = cameraIp != null ? cameraIp : arduinoIp;
 
         // Initialize control values with defaults
         controlValues = new int[13];
@@ -160,9 +168,12 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
         cameraWebView = new WebView();
         cameraWebView.setPrefSize(480, 320);
 
-        // Load the camera stream URL
-        String cameraStreamUrl = "http://" + arduinoIp + ":81/stream";
-        cameraWebView.getEngine().load(cameraStreamUrl);
+        // Load the camera stream URL using the exact format from the camera's documentation
+        // Try using the exact format mentioned in the issue description: "172.16.11.207:81/stream"
+        String cameraStreamUrl = cameraIp + ":" + cameraPort + "/stream";
+        // Add the http:// prefix for the WebView
+        cameraWebView.getEngine().load("http://" + cameraStreamUrl);
+        System.out.println("Loading camera stream from: " + cameraStreamUrl);
 
         // Create a titled pane to contain the camera view
         cameraPane = new TitledPane("Camera Stream", cameraWebView);
@@ -251,22 +262,59 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
     }
 
     /**
+     * Checks if the Arduino is reachable before sending commands
+     * @return true if the Arduino is reachable, false otherwise
+     */
+    protected boolean checkArduinoConnection() {
+        boolean isReachable = DiegoArdUtils.isArduinoReachable(arduinoIp, arduinoPort);
+        if (!isReachable) {
+            Platform.runLater(() -> {
+                statusLabel.setText("Status: Arduino not reachable at " + arduinoIp + ":" + arduinoPort);
+                System.err.println("Arduino not reachable at " + arduinoIp + ":" + arduinoPort);
+            });
+        }
+        return isReachable;
+    }
+
+    /**
      * Sends the current control values to the Arduino.
+     * First checks if the Arduino is reachable, then sends the control values.
+     * Updates the status label based on the result.
      */
     protected void sendControlValues() {
         try {
+            // First check if Arduino is reachable
+            if (!checkArduinoConnection()) {
+                // If not reachable, don't try to send data
+                return;
+            }
+
             String csvData = buildCsvString();
+            System.out.println("Sending data to Arduino at " + arduinoIp + ":" + arduinoPort + " - Data: " + csvData);
             boolean success = DiegoArdUtils.sendToArduino(arduinoIp, arduinoPort, csvData);
 
             Platform.runLater(() -> {
                 if (success) {
                     statusLabel.setText("Status: Connected - Sending commands");
+                    System.out.println("Successfully sent data to Arduino");
                 } else {
-                    statusLabel.setText("Status: Connection error");
+                    statusLabel.setText("Status: Connection error - Check Arduino and network");
+                    System.out.println("Failed to send data to Arduino - Connection error");
                 }
             });
         } catch (Exception e) {
-            Platform.runLater(() -> statusLabel.setText("Status: Error - " + e.getMessage()));
+            System.err.println("Error sending data to Arduino: " + e.getMessage());
+            e.printStackTrace();
+            Platform.runLater(() -> {
+                String errorMsg = e.getMessage();
+                if (errorMsg != null && errorMsg.contains("Connection timed out")) {
+                    statusLabel.setText("Status: Connection timed out - Arduino might be busy");
+                } else if (errorMsg != null && errorMsg.contains("Connection refused")) {
+                    statusLabel.setText("Status: Connection refused - Check Arduino IP and port");
+                } else {
+                    statusLabel.setText("Status: Error - " + errorMsg);
+                }
+            });
         }
     }
 
