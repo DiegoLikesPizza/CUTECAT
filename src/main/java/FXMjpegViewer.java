@@ -8,20 +8,30 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 
 public class FXMjpegViewer {
-	private final ImageView imageView;
+	private final List<ImageView> imageViews = new CopyOnWriteArrayList<>();
 
 	
-	public FXMjpegViewer(ImageView imageView)
-	{
-		this.imageView = imageView;
+	public FXMjpegViewer(ImageView... views) {
+		for (ImageView view : views) {
+			imageViews.add(view);
+		}
 	}
 
-	public void setImage(BufferedImage bufferedImage)
+	public void addImageView(ImageView view) {
+		imageViews.add(view);
+	}
+
+	public void onFrame(Image image)
 	{
-		Image fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
-		Platform.runLater(() -> imageView.setImage(fxImage));
+		Platform.runLater(() -> {
+			for (ImageView view : imageViews) {
+				view.setImage(image);
+			}
+		});
 	}
 
 	    
