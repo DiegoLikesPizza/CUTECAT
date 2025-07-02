@@ -22,9 +22,10 @@ import javafx.stage.StageStyle;
  */
 public class CUTECAT extends Application {
 
-    private static final String ARDUINO_IP = "172.16.11.207";
+    private static final String ARDUINO_IP = "172.16.11.181";
     private static final int ARDUINO_PORT = 80;
     private static final int CAMERA_PORT = 81;
+    private static final String CAMERA_IP = "172.16.11.207";
 
     private Stage primaryStage;
     private modebase currentMode;
@@ -104,7 +105,7 @@ public class CUTECAT extends Application {
         }
 
         // Create and show the new mode
-        ManualMode manualMode = new ManualMode(primaryStage, ARDUINO_IP, ARDUINO_PORT);
+        ManualMode manualMode = new ManualMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = manualMode;
         manualMode.show();
     }
@@ -119,7 +120,7 @@ public class CUTECAT extends Application {
         }
 
         // Create and show the new mode
-        SemiAutoMode semiAutoMode = new SemiAutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT);
+        SemiAutoMode semiAutoMode = new SemiAutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = semiAutoMode;
         semiAutoMode.show();
     }
@@ -134,7 +135,7 @@ public class CUTECAT extends Application {
         }
 
         // Create and show the new mode
-        AutoMode autoMode = new AutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT);
+        AutoMode autoMode = new AutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = autoMode;
         autoMode.show();
     }
