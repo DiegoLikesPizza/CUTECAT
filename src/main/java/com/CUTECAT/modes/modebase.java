@@ -3,6 +3,7 @@ package com.CUTECAT.modes;
 import com.CUTECAT.app.CustomTitleBar;
 import com.CUTECAT.app.WidgetFactory;
 import com.CUTECAT.diegoutil.DiegoArdUtils;
+import com.CUTECAT.diegoutil.DiegoStringUtils;
 import com.CUTECAT.modes.capabilities.MovementCapable;
 import com.CUTECAT.modes.capabilities.ShootingCapable;
 import com.CUTECAT.modes.capabilities.TargetingCapable;
@@ -20,10 +21,13 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static com.CUTECAT.diegoutil.DiegoStringUtils.toCsv;
 
 /**
  * Base class for all vehicle control modes.
@@ -93,6 +97,11 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
         // Initialize control values with defaults
         controlValues = new int[13];
         Arrays.fill(controlValues, 90); // Default servo position
+
+        controlValues[MOTOR1_DIR] = 1;
+        controlValues[MOTOR2_DIR] = 1;
+        controlValues[MOTOR3_DIR] = 1;
+        controlValues[MOTOR4_DIR] = 1;
 
         // Set motor powers to 0
         controlValues[MOTOR1_POWER] = 0;
@@ -192,10 +201,10 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.W) {
                 isForwardPressed = true;
-                moveForward(50);
+                moveForward(150);
             } else if (event.getCode() == KeyCode.S) {
                 isBackwardPressed = true;
-                moveBackward(50);
+                moveBackward(150);
             } else if (event.getCode() == KeyCode.A) {
                 isLeftPressed = true;
                 turnLeft(45);
@@ -283,13 +292,15 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
      */
     protected void sendControlValues() {
         try {
-            // First check if Arduino is reachable
-            if (!checkArduinoConnection()) {
-                // If not reachable, don't try to send data
-                return;
+
+            ArrayList<Integer> list = new ArrayList<>();
+
+            for (int i : controlValues) {
+                list.add(i);
             }
 
-            String csvData = buildCsvString();
+            String csvData = toCsv(list);
+
             System.out.println("Sending data to Arduino at " + arduinoIp + ":" + arduinoPort + " - Data: " + csvData);
             boolean success = DiegoArdUtils.sendToArduino(arduinoIp, arduinoPort, csvData);
 
@@ -316,22 +327,6 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
                 }
             });
         }
-    }
-
-    /**
-     * Builds a CSV string from the control values.
-     * 
-     * @return The CSV string to send to the Arduino
-     */
-    protected String buildCsvString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < controlValues.length; i++) {
-            sb.append(controlValues[i]);
-            if (i < controlValues.length - 1) {
-                sb.append(",");
-            }
-        }
-        return sb.toString();
     }
 
     /**

@@ -1,9 +1,10 @@
 package com.CUTECAT.diegoutil;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -51,54 +52,21 @@ public class DiegoArdUtils {
      * @return true if the data was sent successfully, false otherwise
      */
     public static boolean sendToArduino(String ip, int port, String csvData, int retryAttempts) {
-        HttpURLConnection connection = null;
         int attempts = 0;
 
         while (attempts < retryAttempts) {
             try {
-                // Create the URL with the /data endpoint
-                URL url = new URL("http://" + ip + ":" + port);
 
-                // Open a connection
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setConnectTimeout(CONNECTION_TIMEOUT);
-                connection.setReadTimeout(READ_TIMEOUT);
+                Socket socket = new Socket(ip, port);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-                // Set up the connection for sending data
-                connection.setDoOutput(true);
-                connection.setRequestProperty("Content-Type", "text/plain");
+                out.println(csvData);
 
-                // Write the CSV data directly to the output stream
-                try (java.io.OutputStream os = connection.getOutputStream()) {
-                    byte[] input = csvData.getBytes(StandardCharsets.UTF_8);
-                    os.write(input, 0, input.length);
-                }
+                socket.close();
 
-                // Get the response code
-                int responseCode = connection.getResponseCode();
-
-                // Return true if the response code is 200 (OK)
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    return true;
-                } else {
-                    System.err.println("Arduino returned non-OK response code: " + responseCode);
-                }
+                return true;
             } catch (IOException e) {
-                System.err.println("Attempt " + (attempts + 1) + " failed: " + e.getMessage());
-                if (e.getMessage() != null && e.getMessage().contains("Connection timed out")) {
-                    System.err.println("Connection timed out. Arduino might be busy or unreachable.");
-                } else if (e.getMessage() != null && e.getMessage().contains("Connection refused")) {
-                    System.err.println("Connection refused. Arduino might not be running or the port might be wrong.");
-                } else if (e.getMessage() != null && e.getMessage().contains("HTTP response code: 404")) {
-                    System.err.println("HTTP 404 Not Found. The Arduino endpoint '/data' does not exist or is not configured correctly. Try a different endpoint or check the Arduino code.");
-                } else if (e.getMessage() != null && e.getMessage().contains("HTTP response code: 400")) {
-                    System.err.println("HTTP 400 Bad Request. The Arduino could not understand the request.");
-                }
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
+                System.out.println("Connection failed! ->" + e.getMessage());
             }
 
             attempts++;
