@@ -2,8 +2,6 @@ package com.CUTECAT.app;
 
 import com.CUTECAT.GUI.AndreasGUI;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
@@ -17,13 +15,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.layout.Region;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 
 public class CUTECAT extends Application {
@@ -54,8 +47,15 @@ public class CUTECAT extends Application {
         camera2.setFitHeight(400);
         camera2.setPreserveRatio(true);
 
+        ImageView camera3 = new ImageView();
+        camera3.setLayoutX(1200);
+        camera3.setLayoutY(150);
+        camera3.setFitWidth(700);
+        camera3.setFitHeight(400);
+        camera3.setPreserveRatio(true);
 
-        src.main.mjpeg.FXMjpegViewer fxViewer = new src.main.mjpeg.FXMjpegViewer(camera, camera2);
+
+        src.main.mjpeg.FXMjpegViewer fxViewer = new src.main.mjpeg.FXMjpegViewer(camera, camera2, camera3);
 
         try {
             String url = "http://172.16.11.207:81/stream";
@@ -99,7 +99,7 @@ public class CUTECAT extends Application {
         AndreasGUI.addWidgets(content);
         AndreasGUI.addWidgets2(content2, camera);
         AndreasGUI.addWidgets3(content3, camera2);
-        AndreasGUI.addWidgets4(content4);
+        AndreasGUI.addWidgets4(content4, camera3);
 
 
 
@@ -118,19 +118,19 @@ public class CUTECAT extends Application {
         Tab tab2 = new Tab("Ferngesteuerter Modus");
         tab2.setContent(content2);
         // Closeable tabs (default)
-        tab1.setClosable(true);
-        tab2.setClosable(true);
+        tab1.setClosable(false);
+        tab2.setClosable(false);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
         Tab tab3 = new Tab("Halbautomatischer Modus");
         tab3.setContent(content3);
         // Closeable tabs (default)
-        tab3.setClosable(true);
+        tab3.setClosable(false);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
         Tab tab4 = new Tab("Vollautomatischer Modus");
         tab4.setContent(content4);
-        tab4.setClosable(true);
+        tab4.setClosable(false);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
         tabPane.getTabs().addAll(tab1,   tab2, tab3, tab4);
