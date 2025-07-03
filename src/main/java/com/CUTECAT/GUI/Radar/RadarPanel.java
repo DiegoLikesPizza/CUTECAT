@@ -30,8 +30,8 @@ public class RadarPanel extends Pane {
 
         // Zufällig ein paar Objekte auf dem Radar platzieren
         for (int i = 0; i < 10; i++) {
-            double objAngle = random.nextDouble() * 360;
-            double objRadius = random.nextDouble() * radius;
+            double objAngle = 180;//DiegosKlasse.ServohorizontalWinkelzurückgeben(); evtl. Winkel umrechnen Stellung Servo != Grad am Radar
+            double objRadius = 0.5 * 300;//DiegiKlasse.Ultraschallentfernungincmzurückgeben(); Wert dann durch 2 Teilen
             double x = centerX + objRadius * Math.cos(Math.toRadians(objAngle));
             double y = centerY + objRadius * Math.sin(Math.toRadians(objAngle));
             objects.add(new double[]{x, y});
