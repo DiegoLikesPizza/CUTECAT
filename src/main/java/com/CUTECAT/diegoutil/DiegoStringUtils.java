@@ -1,5 +1,6 @@
 package com.CUTECAT.diegoutil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -28,18 +29,19 @@ public class DiegoStringUtils {
     /**
      * Converts an array of doubles to a CSV string.
      * 
-     * @param values The array of doubles
+     * @param list The array of ints
      * @return The CSV string
      */
-    public static String toCsv(double[] values) {
+    public static String toCsv(ArrayList<Integer> list) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < values.length; i++) {
-            sb.append(values[i]);
-            if (i < values.length - 1) {
-                sb.append(",");
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i));
+            if (i < list.size() - 1) {
+                sb.append(',');
             }
         }
         return sb.toString();
+
     }
     
     /**

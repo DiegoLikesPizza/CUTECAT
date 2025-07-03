@@ -23,7 +23,7 @@ import javafx.stage.StageStyle;
 public class CUTECAT extends Application {
 
     private static final String ARDUINO_IP = "172.16.11.181";
-    private static final int ARDUINO_PORT = 80;
+    private static final int ARDUINO_PORT = 81;
     private static final int CAMERA_PORT = 81;
     private static final String CAMERA_IP = "172.16.11.207";
 
