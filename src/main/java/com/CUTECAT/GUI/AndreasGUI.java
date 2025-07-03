@@ -1,6 +1,5 @@
 package com.CUTECAT.GUI;
 
-import com.CUTECAT.app.CUTECAT;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -121,7 +120,7 @@ public class AndreasGUI {
         //Anzeige von verschiedenen Parametern
 
         //Rotation Turm
-        Label Label2b = new Label("Rotation Turm");
+        Label Label2b = new Label("Munition");
         Label2b.getStyleClass().add("styled-label-a");
         Label2b.setMinWidth(300);
         Label2b.setMaxWidth(300);
@@ -141,7 +140,7 @@ public class AndreasGUI {
 
 
         //Neigung Rohr
-        Label Label2c = new Label("Neigung Rohr");
+        Label Label2c = new Label("Rotation Rohr");
         Label2c.getStyleClass().add("styled-label-a");
         Label2c.setMinWidth(300);
         Label2c.setMaxWidth(300);
@@ -161,7 +160,7 @@ public class AndreasGUI {
 
 
         //Munition
-        Label Label2d = new Label("Munition");
+        Label Label2d = new Label("Neigung Lauf");
         Label2d.getStyleClass().add("styled-label-a");
         Label2d.setMinWidth(300);
         Label2d.setMaxWidth(300);
@@ -181,7 +180,7 @@ public class AndreasGUI {
 
 
         //Gasdruck
-        Label Label2e = new Label("Gasdruck");
+        Label Label2e = new Label("Sensor horizontal");
         Label2e.getStyleClass().add("styled-label-a");
         Label2e.setMinWidth(300);
         Label2e.setMaxWidth(300);
@@ -199,9 +198,28 @@ public class AndreasGUI {
         Label2e2.setLayoutY(500);
         Label2e2.setFont(new Font("Arial", 22));
 
+        //Gasdruck
+        Label Label2g = new Label("Sensor vertikal");
+        Label2g.getStyleClass().add("styled-label-a");
+        Label2g.setMinWidth(300);
+        Label2g.setMaxWidth(300);
+        Label2g.setLayoutX(50);
+        Label2g.setLayoutY(600);
+        Label2g.setFont(new Font("Arial", 22));
+
+        //Wertangabe
+        Label Label2g2 = new Label();
+        Label2g2.setText("30");
+        Label2g2.getStyleClass().add("styled-label-a");
+        Label2g2.setMinWidth(100);
+        Label2g2.setMaxWidth(100);
+        Label2g2.setLayoutX(370);
+        Label2g2.setLayoutY(600);
+        Label2g2.setFont(new Font("Arial", 22));
+
 
         content2.getChildren().addAll(
-                Label2b, Label2b2, Label2c, Label2c2, Label2d, Label2d2, Label2e, Label2e2);
+                Label2b, Label2b2, Label2c, Label2c2, Label2d, Label2d2, Label2e, Label2e2, Label2g, Label2g2);
 
         Label Label2f = new Label("Entfernung in m");
         Label2f.getStyleClass().add("styled-label-a");
@@ -268,14 +286,14 @@ public class AndreasGUI {
 
         content2.getChildren().addAll(slider);
 
-        Button Abschluss2 = new Button("Abschluss");
-        Abschluss2.getStyleClass().add("styled-button-abschluss");
-        Abschluss2.setMinWidth(300);
-        Abschluss2.setMaxWidth(300);
-        Abschluss2.setLayoutX(1400);
-        Abschluss2.setLayoutY(650);
-        Abschluss2.setFont(new Font("Arial", 22));
-        content2.getChildren().addAll(Abschluss2);
+        Button Abschuss2 = new Button("Abschuss");
+        Abschuss2.getStyleClass().add("styled-button-abschluss");
+        Abschuss2.setMinWidth(300);
+        Abschuss2.setMaxWidth(300);
+        Abschuss2.setLayoutX(1400);
+        Abschuss2.setLayoutY(650);
+        Abschuss2.setFont(new Font("Arial", 22));
+        content2.getChildren().addAll(Abschuss2);
 
         radar.RadarPanel rp = new radar.RadarPanel();
         rp.startScanning();
@@ -336,7 +354,7 @@ public class AndreasGUI {
         //Anzeige von verschiedenen Parametern
 
         //Rotation Turm
-        Label Label3b = new Label("Rotation Turm");
+        Label Label3b = new Label("Munition");
         Label3b.getStyleClass().add("styled-label-a");
         Label3b.setMinWidth(300);
         Label3b.setMaxWidth(300);
@@ -356,7 +374,7 @@ public class AndreasGUI {
 
 
         //Neigung Rohr
-        Label Label3c = new Label("Neigung Rohr");
+        Label Label3c = new Label("Rotation Turm");
         Label3c.getStyleClass().add("styled-label-a");
         Label3c.setMinWidth(300);
         Label3c.setMaxWidth(300);
@@ -376,7 +394,7 @@ public class AndreasGUI {
 
 
         //Munition
-        Label Label3d = new Label("Munition");
+        Label Label3d = new Label("Neigung Lauf");
         Label3d.getStyleClass().add("styled-label-a");
         Label3d.setMinWidth(300);
         Label3d.setMaxWidth(300);
@@ -396,7 +414,7 @@ public class AndreasGUI {
 
 
         //Gasdruck
-        Label Label3e = new Label("Gasdruck");
+        Label Label3e = new Label("Sensor horizontal");
         Label3e.getStyleClass().add("styled-label-a");
         Label3e.setMinWidth(300);
         Label3e.setMaxWidth(300);
@@ -472,7 +490,7 @@ public class AndreasGUI {
             content3.getChildren().addAll(taste, funktion);
         }
 
-        Button Abschluss = new Button("Abschluss");
+        Button Abschluss = new Button("Abschuss");
         Abschluss.getStyleClass().add("styled-button-abschluss");
         Abschluss.setMinWidth(300);
         Abschluss.setMaxWidth(300);
@@ -493,7 +511,7 @@ public class AndreasGUI {
 
 
     //Vollautomatischer Modus
-    public static void addWidgets4(Pane content4) {
+    public static void addWidgets4(Pane content4, ImageView camera3) {
         //Headline
         Label Label4a = new Label("Vollautomatischer Modus");
         Label4a.getStyleClass().add("styled-titel");
@@ -629,6 +647,8 @@ public class AndreasGUI {
         rp3.setLayoutY(150);
 
         content4.getChildren().addAll(rp3);
+
+        content4.getChildren().addAll(camera3);
 
 
     }

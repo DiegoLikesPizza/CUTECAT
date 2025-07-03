@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Properties;
 import src.main.mjpeg.FXMjpegViewer;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
 
 public class MjpegReceiver extends DataInputStream implements Runnable {
     private static String TAG = "MJPEG_Receiver";
@@ -62,9 +64,10 @@ public class MjpegReceiver extends DataInputStream implements Runnable {
 	        skipBytes(headersLength);//skips over the bytes containing the header
 	        readFully(frameData, 0, frameContentLength);//reads the bytes of length 'frameContentLength' into 'frameData'
 
-	        BufferedImage image = ImageIO.read( new ByteArrayInputStream( frameData ));
-	        if(image!=null) {
-				fxViewer.onFrame(image);
+	        BufferedImage bufferedImage = ImageIO.read( new ByteArrayInputStream( frameData ));
+	        if(bufferedImage!=null) {
+				Image fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
+				fxViewer.onFrame(fxImage);
 			}
 	        return 0;
 	    }
