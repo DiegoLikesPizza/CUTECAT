@@ -1,340 +1,187 @@
 package com.CUTECAT.diegoutil;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import static com.CUTECAT.diegoutil.DiegoMathUtils.*;
-import static com.CUTECAT.diegoutil.DiegoStringUtils.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 /**
- * Utility class for communicating with the Arduino-based tank.
- * Handles sending commands for wheel movement, steering, and various servo positions.
+ * Utility class for communicating with Arduino devices over HTTP.
  */
-public class DiegoArdUtils extends Thread {
-
-    // Motor constants
-    private static final String[] MOTORS = {"MOTOR1", "MOTOR2", "MOTOR3", "MOTOR4"};
-
-    // Connection constants
-    private static final String ARDUINOIP = "172.16.10.127";
-    private static final int PORT = 81;
-
-    // Angle limits
-    private static final int MIN_PITCH = 2;
-    private static final int MAX_PITCH = 85;
-    private static final int MIN_YAW = -90;
-    private static final int MAX_YAW = 90;
-
-    // Speed limits
-    private static final int MIN_SPEED = 0;
-    private static final int MAX_SPEED = 255;
-
-    // Default values
-    private static final int DEFAULT_STEER_ANGLE = 0;
-    private static final int DEFAULT_HEAD_YAW = 90;
-    private static final int DEFAULT_HEAD_PITCH = 180;
-    private static final int DEFAULT_CAMERA_ANGLE = 90;
-    private static final int DEFAULT_ULTRASONIC_ANGLE = 90;
-    private static final int DEFAULT_STEP_MOTOR = 0;
-
-    // Control map and command queue
-    private HashMap<String, Integer> ArdMap = new HashMap<>();
-    private ArrayList<Integer> ArdCues = new ArrayList<>();
-
-    // Thread control
-    private boolean remoteControlling;
+public class DiegoArdUtils {
 
     /**
-     * Initialize the control map with default values for all parameters
+     * Maximum number of retry attempts for Arduino communication
      */
-    private void initializeControlMap() {
-        // Initialize wheel directions and speeds
-        for (String motor : MOTORS) {
-            ArdMap.put(motor + "_DIR", 1);    // 1 = forward, 2 = backward
-            ArdMap.put(motor + "_SPEED", 0);  // 0-255 speed range
-        }
+    private static final int MAX_RETRY_ATTEMPTS = 3;
 
-        // Initialize steering and servo positions
-        ArdMap.put("steer", DEFAULT_STEER_ANGLE);       // Steering angle (-90 to 90)
-        ArdMap.put("HYaw", DEFAULT_HEAD_YAW);           // Head/turret horizontal angle (0-180, default 90)
-        ArdMap.put("HPitch", DEFAULT_HEAD_PITCH);       // Head/turret vertical angle (0-180, default 180)
-        ArdMap.put("CameraAngle", DEFAULT_CAMERA_ANGLE); // Camera angle
-        ArdMap.put("UltrasonicAngle", DEFAULT_ULTRASONIC_ANGLE); // Ultrasonic sensor angle
-        ArdMap.put("StepMotor", DEFAULT_STEP_MOTOR);    // Step motor position
-        ArdMap.put("Shoot", 0);                         // Shoot command (0 = don't shoot, 1 = shoot)
+    /**
+     * Connection timeout in milliseconds
+     */
+    private static final int CONNECTION_TIMEOUT = 10000; // 10 seconds
+
+    /**
+     * Read timeout in milliseconds
+     */
+    private static final int READ_TIMEOUT = 10000; // 10 seconds
+
+    /**
+     * Sends a CSV string to an Arduino at the specified IP address and port.
+     * Uses the default number of retry attempts.
+     * The CSV data is sent directly in the request body using a POST request to the "/data" endpoint.
+     * 
+     * @param ip The IP address of the Arduino
+     * @param port The port number
+     * @param csvData The CSV data to send
+     * @return true if the data was sent successfully, false otherwise
+     */
+    public static boolean sendToArduino(String ip, int port, String csvData) {
+
+        boolean tempbool;
+        try {
+            tempbool = sendToArduino(ip, port, csvData, MAX_RETRY_ATTEMPTS);
+        } catch (InterruptedException e) {
+            tempbool = false;
+        }
+        return tempbool;
     }
 
     /**
-     * Update the Arduino command queue with current values from the control map
+     * Sends a CSV string to an Arduino at the specified IP address and port with retry mechanism.
+     * The CSV data is sent directly in the request body using a POST request to the "/data" endpoint.
+     * 
+     * @param ip The IP address of the Arduino
+     * @param port The port number
+     * @param csvData The CSV data to send
+     * @param retryAttempts Number of retry attempts if connection fails
+     * @return true if the data was sent successfully, false otherwise
      */
-    private void updateArdCues() {
-        ArdCues.clear();
+    public static boolean sendToArduino(String ip, int port, String csvData, int retryAttempts) throws InterruptedException {
+        int attempts = 0;
 
-        // Add wheel directions and speeds
-        for (String motor : MOTORS) {
-            Integer dir = ArdMap.getOrDefault(motor + "_DIR", 1);    // Default to forward
-            Integer speed = ArdMap.getOrDefault(motor + "_SPEED", 0); // Default to stop
-            ArdCues.add(dir);
-            ArdCues.add(speed);
-        }
+        while (attempts < retryAttempts) {
+            try {
 
-        // Add steering and servo positions
-        ArdCues.add(ArdMap.getOrDefault("steer", DEFAULT_STEER_ANGLE));
-        ArdCues.add(ArdMap.getOrDefault("HYaw", DEFAULT_HEAD_YAW));
-        ArdCues.add(ArdMap.getOrDefault("HPitch", DEFAULT_HEAD_PITCH));
-        ArdCues.add(ArdMap.getOrDefault("CameraAngle", DEFAULT_CAMERA_ANGLE));
-        ArdCues.add(ArdMap.getOrDefault("UltrasonicAngle", DEFAULT_ULTRASONIC_ANGLE));
-        ArdCues.add(ArdMap.getOrDefault("StepMotor", DEFAULT_STEP_MOTOR));
-        ArdCues.add(ArdMap.getOrDefault("Shoot", 0));
-    }
+                Socket socket = new Socket(ip, port);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-    /**
-     * Main thread method that sends commands to the Arduino
-     */
-    public void run() {
-        try (Socket socket = new Socket(ARDUINOIP, PORT);
-             PrintWriter outprintwriter = new PrintWriter(socket.getOutputStream(), true)) {
+                out.println(csvData);
 
-            initializeControlMap();  // Initialize with default values
+                socket.close();
 
-            while (remoteControlling) {
-                updateArdCues();     // Safely transfer values
+                return true;
+            } catch (IOException e) {
+                System.out.println("Connection failed! ->" + e.getMessage());
+            }
 
-                String csv = toCsv(ArdCues);
-                outprintwriter.println(csv);
-                System.out.println("Sent to Arduino: " + csv);  // Debug output
+            attempts++;
 
-                // Reset shoot command after a short delay
-                if(ArdMap.getOrDefault("Shoot", 0) == 1) {
-                    try {
-                        sleep(125);  // Short delay for shoot action
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException(e);
-                    }
-                    ArdMap.put("Shoot", 0);  // Reset shoot command
-                    updateArdCues();  // Update command queue
-                    csv = toCsv(ArdCues);
-                    outprintwriter.println(csv);  // Send updated commands
-                }
-
-                // Add a small delay to avoid flooding the Arduino
+            // If we have more attempts to go, wait a bit before retrying
+            if (attempts < retryAttempts) {
                 try {
-                    sleep(50);
-                } catch (InterruptedException e) {
+                    System.out.println("Retrying in 1 second... (Attempt " + (attempts + 1) + " of " + retryAttempts + ")");
+                    Thread.sleep(1000); // Wait 1 second before retrying
+                } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
-                    throw new RuntimeException(e);
+                    break;
                 }
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to establish or maintain connection to Arduino", e);
         }
+
+        Thread.sleep(125);
+
+        return false;
     }
 
     /**
-     * Set the direction for a specific motor
-     * @param motorNumber Motor number (1-4)
-     * @param forward True for forward, false for backward
+     * Checks if an Arduino is reachable at the specified IP address and port.
+     * Uses the default number of retry attempts.
+     * Sends a POST request to the "/data" endpoint to check if the Arduino is reachable.
+     * 
+     * @param ip The IP address of the Arduino
+     * @param port The port number
+     * @return true if the Arduino is reachable, false otherwise
      */
-    public void setMotorDirection(int motorNumber, boolean forward) {
-        if (motorNumber < 1 || motorNumber > 4) {
-            throw new IllegalArgumentException("Motor number must be between 1 and 4");
+    public static boolean isArduinoReachable(String ip, int port) {
+        return isArduinoReachable(ip, port, MAX_RETRY_ATTEMPTS);
+    }
+
+    /**
+     * Checks if an Arduino is reachable at the specified IP address and port with retry mechanism.
+     * Sends a POST request to the "/data" endpoint to check if the Arduino is reachable.
+     * 
+     * @param ip The IP address of the Arduino
+     * @param port The port number
+     * @param retryAttempts Number of retry attempts if connection fails
+     * @return true if the Arduino is reachable, false otherwise
+     */
+    public static boolean isArduinoReachable(String ip, int port, int retryAttempts) {
+        HttpURLConnection connection = null;
+        int attempts = 0;
+
+        while (attempts < retryAttempts) {
+            try {
+                // Create the URL with the /data endpoint
+                URL url = new URL("http://" + ip + ":" + port + "/data");
+
+                // Open a connection
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setConnectTimeout(CONNECTION_TIMEOUT);
+                connection.setReadTimeout(READ_TIMEOUT);
+
+                // Set up the connection for sending data (required for POST)
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "text/plain");
+
+                // For a POST request, we need to write something to the output stream
+                try (java.io.OutputStream os = connection.getOutputStream()) {
+                    // Just write an empty string
+                    os.write(new byte[0]);
+                }
+
+                // Get the response code
+                int responseCode = connection.getResponseCode();
+
+                // Return true if the response code is 200 (OK)
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    return true;
+                } else {
+                    System.err.println("Arduino returned non-OK response code: " + responseCode);
+                }
+            } catch (IOException e) {
+                System.err.println("Attempt " + (attempts + 1) + " to reach Arduino failed: " + e.getMessage());
+                if (e.getMessage() != null && e.getMessage().contains("Connection timed out")) {
+                    System.err.println("Connection timed out. Arduino might be busy or unreachable.");
+                } else if (e.getMessage() != null && e.getMessage().contains("Connection refused")) {
+                    System.err.println("Connection refused. Arduino might not be running or the port might be wrong.");
+                } else if (e.getMessage() != null && e.getMessage().contains("HTTP response code: 404")) {
+                    System.err.println("HTTP 404 Not Found. The Arduino endpoint '/data' does not exist or is not configured correctly. Try a different endpoint or check the Arduino code.");
+                } else if (e.getMessage() != null && e.getMessage().contains("HTTP response code: 400")) {
+                    System.err.println("HTTP 400 Bad Request. The Arduino could not understand the request.");
+                }
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+
+            attempts++;
+
+            // If we have more attempts to go, wait a bit before retrying
+            if (attempts < retryAttempts) {
+                try {
+                    System.out.println("Retrying connection check in 1 second... (Attempt " + (attempts + 1) + " of " + retryAttempts + ")");
+                    Thread.sleep(1000); // Wait 1 second before retrying
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
         }
-        ArdMap.put(MOTORS[motorNumber-1] + "_DIR", forward ? 1 : 2);
-    }
 
-    /**
-     * Set the speed for a specific motor
-     * @param motorNumber Motor number (1-4)
-     * @param speed Speed value (0-255)
-     */
-    public void setMotorSpeed(int motorNumber, int speed) {
-        if (motorNumber < 1 || motorNumber > 4) {
-            throw new IllegalArgumentException("Motor number must be between 1 and 4");
-        }
-        if (speed < MIN_SPEED || speed > MAX_SPEED) {
-            throw new IllegalArgumentException("Speed must be between " + MIN_SPEED + " and " + MAX_SPEED);
-        }
-        ArdMap.put(MOTORS[motorNumber-1] + "_SPEED", speed);
-    }
-
-    /**
-     * Set all motors to the same direction
-     * @param forward True for forward, false for backward
-     */
-    public void setAllMotorsDirection(boolean forward) {
-        for (int i = 1; i <= 4; i++) {
-            setMotorDirection(i, forward);
-        }
-    }
-
-    /**
-     * Set all motors to the same speed
-     * @param speed Speed value (0-255)
-     */
-    public void setAllMotorsSpeed(int speed) {
-        if (speed < MIN_SPEED || speed > MAX_SPEED) {
-            throw new IllegalArgumentException("Speed must be between " + MIN_SPEED + " and " + MAX_SPEED);
-        }
-        for (int i = 1; i <= 4; i++) {
-            setMotorSpeed(i, speed);
-        }
-    }
-
-    /**
-     * Set the steering angle
-     * @param angle Steering angle (-90 to 90)
-     * @throws IllegalArgumentException if angle is out of range
-     */
-    public void setSteeringAngle(int angle) throws IllegalArgumentException {
-        if (!isBetween(MIN_YAW, MAX_YAW, angle)) {
-            throw new IllegalArgumentException("Steering angle must be between " + MIN_YAW + " and " + MAX_YAW);
-        }
-        ArdMap.put("steer", angle);
-    }
-
-    /**
-     * Set the head/turret position
-     * @param yaw Horizontal angle (0-180, default 90)
-     * @param pitch Vertical angle (0-180, default 180)
-     * @throws IllegalArgumentException if angles are out of range
-     */
-    public void setHeadPosition(int yaw, int pitch) throws IllegalArgumentException {
-        if (yaw < 0 || yaw > 180) {
-            throw new IllegalArgumentException("Head yaw must be between 0 and 180");
-        }
-        if (pitch < 0 || pitch > 180) {
-            throw new IllegalArgumentException("Head pitch must be between 0 and 180");
-        }
-        ArdMap.put("HYaw", yaw);
-        ArdMap.put("HPitch", pitch);
-    }
-
-    /**
-     * Set the camera angle
-     * @param angle Camera angle (0-180)
-     * @throws IllegalArgumentException if angle is out of range
-     */
-    public void setCameraAngle(int angle) throws IllegalArgumentException {
-        if (angle < 0 || angle > 180) {
-            throw new IllegalArgumentException("Camera angle must be between 0 and 180");
-        }
-        ArdMap.put("CameraAngle", angle);
-    }
-
-    /**
-     * Set the ultrasonic sensor angle
-     * @param angle Ultrasonic sensor angle (0-180)
-     * @throws IllegalArgumentException if angle is out of range
-     */
-    public void setUltrasonicAngle(int angle) throws IllegalArgumentException {
-        if (angle < 0 || angle > 180) {
-            throw new IllegalArgumentException("Ultrasonic sensor angle must be between 0 and 180");
-        }
-        ArdMap.put("UltrasonicAngle", angle);
-    }
-
-    /**
-     * Set the step motor position
-     * @param position Step motor position
-     */
-    public void setStepMotorPosition(int position) {
-        ArdMap.put("StepMotor", position);
-    }
-
-    /**
-     * Start the control thread
-     */
-    public void startControl() {
-        remoteControlling = true;
-        this.start();
-    }
-
-    /**
-     * Stop the control thread
-     */
-    public void stopControl() {
-        remoteControlling = false;
-    }
-
-    /**
-     * Trigger a shot
-     */
-    public void shoot() {
-        ArdMap.put("Shoot", 1);
-    }
-
-    /**
-     * Get a value from the control map
-     * @param key The key to look up
-     * @return The value associated with the key
-     */
-    public int getValue(String key) {
-        return ArdMap.getOrDefault(key, 0);
-    }
-
-    /**
-     * For backward compatibility with existing code
-     */
-    public void setFront(boolean front) {
-        setAllMotorsDirection(front);
-    }
-
-    /**
-     * For backward compatibility with existing code
-     */
-    public void setSpeed(int newSpeed) {
-        setAllMotorsSpeed(newSpeed);
-    }
-
-    /**
-     * For backward compatibility with existing code
-     */
-    public void setDriveYaw(int newYaw) throws Exception {
-        setSteeringAngle(newYaw);
-    }
-
-    /**
-     * For backward compatibility with existing code
-     */
-    public void setHeadView(int yaw, int pitch) throws Exception {
-        setHeadPosition(yaw, pitch);
-    }
-
-    /**
-     * For backward compatibility with existing code
-     */
-    public void setSensorsView(int yaw, int pitch) throws Exception {
-        setCameraAngle(yaw);
-        setUltrasonicAngle(pitch);
+        return false;
     }
 }
-
-/*
-1---2
-  |
-  |
-3---4
-
-
-
-ArrayList
-
-Motor1 Richtung     ( 1 = vorwärts; 2 = rückwärts)
-Motor1 Stärke       ( 0 - 255; 0 schwächste=
-Motor2 Richtung     ( 1 = vorwärts; 2 = rückwärts)
-Motor2 Stärke       ( 0 - 255; 0 schwächste=
-Motor3 Richtung     ( 1 = vorwärts; 2 = rückwärts)
-Motor3 Stärke       ( 0 - 255; 0 schwächste=
-Motor4 Richtung     ( 1 = vorwärts; 2 = rückwärts)
-Motor4 Stärke       ( 0 - 255; 0 schwächste=
-Stellung Lenkservo  ( standartmäßig 0 )
-Stellung Turmservo  ( horizontal Turm; standartmäßig 90 )
-Stellung Laufservo  ( vertikal Lauf; idfk; standartmäßig 180 )
-Kameraservo
-Ultraschallservo
-Schrittmotor
-
- */

@@ -1,18 +1,40 @@
 package com.CUTECAT.modes.capabilities;
 
 /**
- * Interface for classes that can control tank movement
+ * Interface for classes that can control vehicle movement.
  */
 public interface MovementCapable {
+    
     /**
-     * Move the tank with the given speed and direction
-     * @param speed Speed value (0-255)
-     * @param direction Steering angle (-90 to 90)
+     * Moves the vehicle forward.
+     * 
+     * @param speed The speed at which to move (0-100)
      */
-    void move(int speed, int direction);
-
+    void moveForward(int speed);
+    
     /**
-     * Stop the tank's movement
+     * Moves the vehicle backward.
+     * 
+     * @param speed The speed at which to move (0-100)
+     */
+    void moveBackward(int speed);
+    
+    /**
+     * Turns the vehicle left.
+     * 
+     * @param angle The steering angle (0-180)
+     */
+    void turnLeft(int angle);
+    
+    /**
+     * Turns the vehicle right.
+     * 
+     * @param angle The steering angle (0-180)
+     */
+    void turnRight(int angle);
+    
+    /**
+     * Stops the vehicle's movement.
      */
     void stopMovement();
 }

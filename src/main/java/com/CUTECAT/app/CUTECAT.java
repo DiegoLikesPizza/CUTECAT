@@ -1,9 +1,29 @@
 package com.CUTECAT.app;
 
+
+import com.CUTECAT.modes.AutoMode;
+import com.CUTECAT.modes.ManualMode;
+import com.CUTECAT.modes.SemiAutoMode;
+import com.CUTECAT.modes.modebase;
 import com.CUTECAT.GUI.AndreasGUI;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+
+
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+/**
+ * Main JavaFX application class for the CUTECAT project.
+ * This class handles the start screen and navigation to different modes.
+ */
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
@@ -18,17 +38,47 @@ import javafx.scene.layout.Region;
 import java.io.InputStream;
 import java.net.URL;
 
-
 public class CUTECAT extends Application {
-    private double xOffset = 0;
-    private double yOffset = 0;
+
+    private static final String ARDUINO_IP = "172.16.11.181";
+    private static final int ARDUINO_PORT = 81;
+    private static final int CAMERA_PORT = 81;
+    private static final String CAMERA_IP = "172.16.11.207";
+
+    private Stage primaryStage;
+    private modebase currentMode;
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
-        // Create main container
-        VBox root = new VBox();
-        root.getStyleClass().add("main-container");
+        this.primaryStage = primaryStage;
+        primaryStage.initStyle(StageStyle.UNDECORATED);
+
+        // Set up application exit handler
+        Platform.setImplicitExit(true);
+        primaryStage.setOnCloseRequest(event -> {
+            stop();
+            Platform.exit();
+        });
+
+        showStartScreen();
+    }
+
+    @Override
+    public void stop() {
+        // Clean up resources when the application is stopping
+        if (currentMode != null) {
+            currentMode.shutdown();
+            currentMode = null;
+        }
+    }
+
+    /**
+     * Displays the start screen with buttons to select different modes.
+     */
+    private void showStartScreen() {
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(20));
+        root.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
 
         // Add custom title bar
         CustomTitleBar titleBar = new CustomTitleBar(primaryStage);
@@ -212,18 +262,39 @@ public class CUTECAT extends Application {
         clip.setArcHeight(arcHeight);
         root.setClip(clip);
 
-        // Adjust clip size dynamically if the window is resized
-        root.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            clip.setWidth(newBounds.getWidth());
-            clip.setHeight(newBounds.getHeight());
-        });
+        // Create and show the new mode
+        ManualMode manualMode = new ManualMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        currentMode = manualMode;
+        manualMode.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    /**
+     * Opens the Semi-Auto Mode window.
+     */
+    private void openSemiAutoMode() {
+        // Shut down the current mode if one exists
+        if (currentMode != null) {
+            currentMode.shutdown();
+        }
+
+        // Create and show the new mode
+        SemiAutoMode semiAutoMode = new SemiAutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        currentMode = semiAutoMode;
+        semiAutoMode.show();
     }
 
+    /**
+     * Opens the Auto Mode window.
+     */
+    private void openAutoMode() {
+        // Shut down the current mode if one exists
+        if (currentMode != null) {
+            currentMode.shutdown();
+        }
 
-
-
+        // Create and show the new mode
+        AutoMode autoMode = new AutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        currentMode = autoMode;
+        autoMode.show();
+    }
 }

@@ -1,123 +1,231 @@
 package com.CUTECAT.modes;
 
-import com.CUTECAT.modes.capabilities.*;
+import com.CUTECAT.app.WidgetFactory;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
- * Semi-automatic mode implementation where the tank automatically calculates
- * shooting angles and performs automatic aiming, but movement is manual.
+ * Semi-automatic control mode for the vehicle.
+ * In this mode, the Arduino aims and shoots automatically, but the user controls the vehicle's movement.
  */
-public class SemiAutoMode extends modebase 
-    implements MovementCapable, ShootingCapable, TargetingCapable {
+public class SemiAutoMode extends modebase {
 
-    // Target lock status
-    private boolean targetLocked = false;
+    // UI components
+    private Slider steeringSlider;
+    private TextField steeringField;
+    private Button activateTargetingButton;
+    private Button deactivateTargetingButton;
+    private Label targetDistanceLabel;
+    private boolean targetingActive = false;
 
     /**
-     * Move the tank with the given speed and direction
-     * @param speed Speed value (0-255)
-     * @param direction Steering angle (-90 to 90)
+     * Creates a new semi-auto mode instance.
+     * 
+     * @param parentStage The parent stage
+     * @param arduinoIp The IP address of the Arduino
+     * @param arduinoPort The port number of the Arduino
+     * @param cameraPort The port number for the camera stream
+     * @param cameraIp The IP address of the camera
      */
+    public SemiAutoMode(Stage parentStage, String arduinoIp, int arduinoPort, int cameraPort, String cameraIp) {
+        super(parentStage, arduinoIp, arduinoPort, cameraPort, cameraIp);
+    }
+
     @Override
-    public void move(int speed, int direction) {
-        driveWSteer(true, speed, direction);
+    protected String getModeName() {
+        return "Semi-Auto Mode";
+    }
+
+    @Override
+    protected void addModeControls(VBox container) {
+        // Add instructions
+        Label instructionsLabel = new Label(
+            "Use W, A, S, D keys to drive the vehicle.\n" +
+            "The Arduino will aim and shoot automatically when targeting is activated."
+        );
+        instructionsLabel.getStyleClass().add("instructions-label");
+        instructionsLabel.setPadding(new Insets(0, 0, 20, 0));
+
+        // Create movement controls
+        VBox movementControls = new VBox(10);
+        movementControls.setPadding(new Insets(10));
+
+        Label movementTitle = WidgetFactory.createSectionTitle("Movement Controls");
+
+        // Create a grid for the movement controls
+        GridPane movementGrid = new GridPane();
+        movementGrid.setHgap(10);
+        movementGrid.setVgap(10);
+        movementGrid.setPadding(new Insets(10));
+
+        // Steering servo
+        Label steeringLabel = new Label("Steering:");
+        steeringLabel.getStyleClass().add("control-label");
+        steeringSlider = createServoSlider(controlValues[STEERING_SERVO]);
+        steeringField = createAngleTextField(controlValues[STEERING_SERVO]);
+        setupServoControl(steeringSlider, steeringField, STEERING_SERVO);
+
+        // Add controls to the grid
+        movementGrid.add(steeringLabel, 0, 0);
+        movementGrid.add(steeringSlider, 1, 0);
+        movementGrid.add(steeringField, 2, 0);
+
+        // Add all components to the movement controls
+        movementControls.getChildren().addAll(movementTitle, movementGrid);
+
+        // Create targeting controls
+        VBox targetingControls = new VBox(10);
+        targetingControls.setPadding(new Insets(10));
+
+        Label targetingTitle = WidgetFactory.createSectionTitle("Targeting Controls");
+
+        // Target distance display
+        targetDistanceLabel = new Label("Target Distance: Not detected");
+        targetDistanceLabel.getStyleClass().add("status-label");
+
+        // Targeting buttons
+        HBox targetingButtons = new HBox(10);
+        targetingButtons.setPadding(new Insets(10));
+
+        activateTargetingButton = WidgetFactory.createButton("Activate Targeting", e -> activateTargeting());
+        deactivateTargetingButton = WidgetFactory.createButton("Deactivate Targeting", e -> deactivateTargeting());
+        deactivateTargetingButton.setDisable(true); // Initially disabled
+
+        targetingButtons.getChildren().addAll(activateTargetingButton, deactivateTargetingButton);
+
+        // Add all components to the targeting controls
+        targetingControls.getChildren().addAll(targetingTitle, targetDistanceLabel, targetingButtons);
+
+        // Add all components to the main container
+        container.getChildren().addAll(instructionsLabel, movementControls, targetingControls);
     }
 
     /**
-     * Stop the tank's movement
+     * Activates the automatic targeting system.
      */
-    @Override
-    public void stopMovement() {
-        driveWOSteer(true, 0);
-    }
+    private void activateTargeting() {
+        targetingActive = true;
+        activateTargetingButton.setDisable(true);
+        deactivateTargetingButton.setDisable(false);
 
-    /**
-     * Fire a shot if ammo is available and target is locked
-     */
-    @Override
-    public void shoot() {
-        if (canShoot()) {
-            if (targetLocked) {
-                shootOnce();
-                System.out.println("Shot fired at target! Remaining ammo: " + getAmmoCount());
-            } else {
-                System.out.println("Cannot shoot - target not locked!");
+        // Activate camera and ultrasonic sensor
+        activateCamera();
+        activateUltrasonicSensor();
+
+        // Start a thread to update the target distance
+        Thread targetingThread = new Thread(() -> {
+            while (targetingActive) {
+                try {
+                    // Get the target distance
+                    double distance = getTargetDistance();
+
+                    // Update the UI
+                    javafx.application.Platform.runLater(() -> {
+                        targetDistanceLabel.setText(String.format("Target Distance: %.2f cm", distance));
+                    });
+
+                    // Auto-target if a target is detected
+                    if (distance > 0 && distance < 300) {
+                        boolean targeted = autoTarget();
+
+                        if (targeted) {
+                            // Shoot automatically
+                            shoot();
+
+                            // Wait a bit before shooting again
+                            Thread.sleep(2000);
+                        }
+                    }
+
+                    // Sleep for a short time
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    break;
+                }
             }
-        } else {
-            System.out.println("Cannot shoot - no ammo left!");
-        }
+        });
+
+        targetingThread.setDaemon(true);
+        targetingThread.start();
     }
 
     /**
-     * Check if shooting is possible (if there's ammo)
-     * @return true if shooting is possible, false otherwise
+     * Deactivates the automatic targeting system.
      */
-    @Override
-    public boolean canShoot() {
-        return getAmmoCount() > 0;
+    private void deactivateTargeting() {
+        targetingActive = false;
+        activateTargetingButton.setDisable(false);
+        deactivateTargetingButton.setDisable(true);
+
+        // Reset the target distance label
+        targetDistanceLabel.setText("Target Distance: Not detected");
+
+        // Reset the servos
+        resetShooter();
     }
 
     /**
-     * Automatically aim at a target at the given distance and angle
-     * @param distance Distance to target in centimeters
-     * @param angle Horizontal angle to target (-180 to 180)
-     * @throws Exception if target cannot be reached
+     * Creates a slider for controlling a servo.
+     * 
+     * @param initialValue The initial value
+     * @return The created slider
      */
-    @Override
-    public void aim(int distance, int angle) throws Exception {
-        // Store target information
-        setTargetDistance(distance);
-        setTargetRelativeDirection(angle);
-
-        // Calculate pitch based on distance
-        int pitch = calculatePitch(distance);
-
-        // Set head position
-        setHeadPosition(angle, pitch);
-
-        // Point camera and ultrasonic sensor in the same direction
-        setCameraAngle(angle);
-        setUltrasonicAngle(angle);
-
-        // Mark target as locked
-        targetLocked = true;
-
-        System.out.println("Target locked at distance " + distance + 
-                           "cm, angle " + angle + "°, pitch " + pitch + "°");
+    private Slider createServoSlider(int initialValue) {
+        Slider slider = new Slider(0, 180, initialValue);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.setMajorTickUnit(45);
+        slider.setMinorTickCount(4);
+        slider.setSnapToTicks(false);
+        slider.setPrefWidth(300);
+        return slider;
     }
 
     /**
-     * Check if target is locked
-     * @return true if target is locked, false otherwise
+     * Creates a text field for entering an angle.
+     * 
+     * @param initialValue The initial value
+     * @return The created text field
      */
-    @Override
-    public boolean isTargetLocked() {
-        return targetLocked;
+    private TextField createAngleTextField(int initialValue) {
+        TextField textField = new TextField(String.valueOf(initialValue));
+        textField.setPrefWidth(60);
+        return textField;
     }
 
     /**
-     * Handle targeting logic - automatically aim at the target
-     * if target distance and direction are set
+     * Sets up the connection between a slider, a text field, and a control value.
+     * 
+     * @param slider The slider
+     * @param textField The text field
+     * @param controlIndex The index of the control value
      */
-    @Override
-    protected void handleTargeting() {
-        int distance = getTargetDistance();
-        int angle = getTargetRelativeDirection();
+    private void setupServoControl(Slider slider, TextField textField, int controlIndex) {
+        // Update text field when slider changes
+        slider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int value = newVal.intValue();
+            textField.setText(String.valueOf(value));
+            controlValues[controlIndex] = value;
+        });
 
-        if (distance > 0) {
+        // Update slider when text field changes
+        textField.setOnAction(e -> {
             try {
-                aim(distance, angle);
-            } catch (Exception e) {
-                System.err.println("Error aiming: " + e.getMessage());
-                targetLocked = false;
+                int value = Integer.parseInt(textField.getText());
+                value = Math.max(0, Math.min(180, value)); // Constrain to 0-180
+                slider.setValue(value);
+                controlValues[controlIndex] = value;
+            } catch (NumberFormatException ex) {
+                // Restore the previous value if parsing fails
+                textField.setText(String.valueOf(controlValues[controlIndex]));
             }
-        }
-    }
-
-    /**
-     * Handle movement logic - in semi-auto mode, movement is manual
-     */
-    @Override
-    protected void handleMovement() {
-        // In semi-auto mode, movement is handled manually
+        });
     }
 }
