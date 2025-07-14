@@ -38,7 +38,14 @@ public class DiegoArdUtils {
      * @return true if the data was sent successfully, false otherwise
      */
     public static boolean sendToArduino(String ip, int port, String csvData) {
-        return sendToArduino(ip, port, csvData, MAX_RETRY_ATTEMPTS);
+
+        boolean tempbool;
+        try {
+            tempbool = sendToArduino(ip, port, csvData, MAX_RETRY_ATTEMPTS);
+        } catch (InterruptedException e) {
+            tempbool = false;
+        }
+        return tempbool;
     }
 
     /**
@@ -51,7 +58,7 @@ public class DiegoArdUtils {
      * @param retryAttempts Number of retry attempts if connection fails
      * @return true if the data was sent successfully, false otherwise
      */
-    public static boolean sendToArduino(String ip, int port, String csvData, int retryAttempts) {
+    public static boolean sendToArduino(String ip, int port, String csvData, int retryAttempts) throws InterruptedException {
         int attempts = 0;
 
         while (attempts < retryAttempts) {
@@ -82,6 +89,8 @@ public class DiegoArdUtils {
                 }
             }
         }
+
+        Thread.sleep(125);
 
         return false;
     }
