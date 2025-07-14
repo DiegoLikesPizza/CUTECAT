@@ -405,4 +405,41 @@
     -fx-text-fill: -fx-text-color;
     -fx-background-radius: 4;
     -fx-padding: 5 8;
-} 
+}
+
+.styled-titel{
+    -fx-background-color: #1874CD;
+    -fx-text-fill: #000000;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4;
+    -fx-padding: 12;
+}
+
+
+.styled-button-a{
+    -fx-background-color: #30D5C8;
+    -fx-text-fill: #000000;
+    -fx-background-radius: 10;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-font-size: 50px;
+}
+
+.styled-label-a{
+    -fx-background-color: 	#4F94CD;
+    -fx-text-fill: #000000;
+    -fx-prompt-text-fill: #000000;
+    -fx-background-radius: 4;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4;
+    -fx-padding: 8;
+}
+
+.styled-button-abschluss{
+    -fx-background-color: #FF0000;
+    -fx-text-fill: #000000;
+    -fx-background-radius: 20;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-font-size: 50px;
+}
