@@ -1,9 +1,7 @@
 package com.CUTECAT.modes;
 
 import com.CUTECAT.app.CustomTitleBar;
-import com.CUTECAT.app.WidgetFactory;
 import com.CUTECAT.diegoutil.DiegoArdUtils;
-import com.CUTECAT.diegoutil.DiegoStringUtils;
 import com.CUTECAT.modes.capabilities.MovementCapable;
 import com.CUTECAT.modes.capabilities.ShootingCapable;
 import com.CUTECAT.modes.capabilities.TargetingCapable;
@@ -81,14 +79,13 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
 
     /**
      * Creates a new mode instance.
-     * 
-     * @param parentStage The parent stage
-     * @param arduinoIp The IP address of the Arduino
+     *
+     * @param arduinoIp   The IP address of the Arduino
      * @param arduinoPort The port number of the Arduino
-     * @param cameraPort The port number for the camera stream
-     * @param cameraIp The IP address of the camera (if null, uses arduinoIp)
+     * @param cameraPort  The port number for the camera stream
+     * @param cameraIp    The IP address of the camera (if null, uses arduinoIp)
      */
-    public modebase(Stage parentStage, String arduinoIp, int arduinoPort, int cameraPort, String cameraIp) {
+    public modebase(String arduinoIp, int arduinoPort, int cameraPort, String cameraIp) {
         this.arduinoIp = arduinoIp;
         this.arduinoPort = arduinoPort;
         this.cameraPort = cameraPort;
@@ -132,7 +129,7 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
         root.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
 
         // Add custom title bar
-        CustomTitleBar titleBar = new CustomTitleBar(stage, getModeName());
+        CustomTitleBar titleBar = new CustomTitleBar(stage);
         root.setTop(titleBar);
 
         // Create main content container with controls and camera

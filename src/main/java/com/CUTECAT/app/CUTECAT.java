@@ -45,40 +45,15 @@ public class CUTECAT extends Application {
     private static final int CAMERA_PORT = 81;
     private static final String CAMERA_IP = "172.16.11.207";
 
-    private Stage primaryStage;
+    //private Stage primaryStage;
     private modebase currentMode;
 
     @Override
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        primaryStage.initStyle(StageStyle.UNDECORATED);
-
-        // Set up application exit handler
-        Platform.setImplicitExit(true);
-        primaryStage.setOnCloseRequest(event -> {
-            stop();
-            Platform.exit();
-        });
-
-        showStartScreen();
-    }
-
-    @Override
-    public void stop() {
-        // Clean up resources when the application is stopping
-        if (currentMode != null) {
-            currentMode.shutdown();
-            currentMode = null;
-        }
-    }
-
-    /**
-     * Displays the start screen with buttons to select different modes.
-     */
-    private void showStartScreen() {
-        BorderPane root = new BorderPane();
-        root.setPadding(new Insets(20));
-        root.getStylesheets().add(getClass().getResource("/styles/dark-theme.css").toExternalForm());
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        // Create main container
+        VBox root = new VBox();
+        root.getStyleClass().add("main-container");
 
         // Add custom title bar
         CustomTitleBar titleBar = new CustomTitleBar(primaryStage);
@@ -118,7 +93,7 @@ public class CUTECAT extends Application {
             System.err.println("Fehler");
             e.printStackTrace();
         }
-        
+
         // Create content area
         Pane content = new Pane();
         //content.setHgap(10);
@@ -145,9 +120,13 @@ public class CUTECAT extends Application {
         content4.setPadding(new Insets(20));
         content4.getStyleClass().add("content-area");
 
+
+        ManualMode manualMode = new ManualMode( ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        currentMode = manualMode;
+
         // Add widgets
         AndreasGUI.addWidgets(content);
-        AndreasGUI.addWidgets2(content2, camera);
+        AndreasGUI.addWidgets2(content2, camera, manualMode);
         AndreasGUI.addWidgets3(content3, camera2);
         AndreasGUI.addWidgets4(content4, camera3);
 
@@ -230,10 +209,10 @@ public class CUTECAT extends Application {
         primaryStage.setHeight(1080);
         primaryStage.setWidth(1920);
         //primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/logo.png")));
-        
+
         // Apply rounded corners
-        setRoundedCorners(root, 10, 10);
-        
+        //setRoundedCorners(root, 10, 10);
+
         primaryStage.show();
 
         /*scene.setOnMouseClicked(e ->{
@@ -250,8 +229,34 @@ public class CUTECAT extends Application {
             }
         });*/
 
-
+        //showStartScreen();
     }
+
+    @Override
+    public void stop() {
+        // Clean up resources when the application is stopping
+        if (currentMode != null) {
+            currentMode.shutdown();
+            currentMode = null;
+        }
+    }
+
+    /**
+     * Displays the start screen with buttons to select different modes.
+     */
+    /*private void showStartScreen() {
+
+        this.primaryStage = primaryStage;
+        primaryStage.initStyle(StageStyle.UNDECORATED);
+
+        // Set up application exit handler
+        Platform.setImplicitExit(true);
+        primaryStage.setOnCloseRequest(event -> {
+            stop();
+            Platform.exit();
+        });
+
+    }*/
 
 
 
@@ -263,9 +268,9 @@ public class CUTECAT extends Application {
         root.setClip(clip);
 
         // Create and show the new mode
-        ManualMode manualMode = new ManualMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        ManualMode manualMode = new ManualMode( ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = manualMode;
-        manualMode.show();
+        //manualMode.show();
     }
 
     /**
@@ -278,7 +283,7 @@ public class CUTECAT extends Application {
         }
 
         // Create and show the new mode
-        SemiAutoMode semiAutoMode = new SemiAutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        SemiAutoMode semiAutoMode = new SemiAutoMode(ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = semiAutoMode;
         semiAutoMode.show();
     }
@@ -293,7 +298,7 @@ public class CUTECAT extends Application {
         }
 
         // Create and show the new mode
-        AutoMode autoMode = new AutoMode(primaryStage, ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        AutoMode autoMode = new AutoMode(ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = autoMode;
         autoMode.show();
     }

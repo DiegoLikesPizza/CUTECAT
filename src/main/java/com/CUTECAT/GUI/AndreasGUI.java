@@ -10,16 +10,26 @@ import src.main.mjpeg.FXMjpegViewer;
 //import src.main.mjpeg.MjpegMain;
 import src.main.mjpeg.MjpegReceiver;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import com.CUTECAT.modes.modebase;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 import java.io.InputStream;
 import java.net.URL;
 
+
+
 public class AndreasGUI {
 
+    private modebase modeInstance;
+    public AndreasGUI(modebase modeInstance) {
+        this.modeInstance = modeInstance;
+    }
     @FXML
     public ImageView cameraView;
     public Thread mjpegThread;
+
 
     @FXML
     public void startCameraStream(){
@@ -35,6 +45,7 @@ public class AndreasGUI {
         catch (Exception e){
         e.printStackTrace();
     }}
+
 
     public static void addWidgets(Pane content) {
 
@@ -108,7 +119,7 @@ public class AndreasGUI {
     }
 
     //Ferngesteuerter Modus
-    public static void addWidgets2(Pane content2, ImageView camera) {
+    public static void addWidgets2(Pane content2, ImageView camera, modebase mode) {
 
 
         Label Label2a = new Label("Ferngesteuerter Modus");
@@ -235,8 +246,17 @@ public class AndreasGUI {
         content2.getChildren().addAll(
                 Label2f);
 
-        //Wertangabe
         Label Label2f2 = new Label();
+        /*Timeline timeline = new Timeline(
+        new KeyFrame(Duration.seconds(0.5), e -> {
+
+            double distance = modeInstance.getTargetDistance();
+            Label2f2.setText(String.format("%.1f", distance));
+        })
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();*/
+        //Wertangabe
         Label2f2.setText("30");
         Label2f2.getStyleClass().add("styled-label-a");
         Label2f2.setMinWidth(100);

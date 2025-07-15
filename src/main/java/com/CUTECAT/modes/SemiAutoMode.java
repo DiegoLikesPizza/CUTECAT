@@ -9,7 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 /**
  * Semi-automatic control mode for the vehicle.
@@ -27,15 +26,14 @@ public class SemiAutoMode extends modebase {
 
     /**
      * Creates a new semi-auto mode instance.
-     * 
-     * @param parentStage The parent stage
-     * @param arduinoIp The IP address of the Arduino
+     *
+     * @param arduinoIp   The IP address of the Arduino
      * @param arduinoPort The port number of the Arduino
-     * @param cameraPort The port number for the camera stream
-     * @param cameraIp The IP address of the camera
+     * @param cameraPort  The port number for the camera stream
+     * @param cameraIp    The IP address of the camera
      */
-    public SemiAutoMode(Stage parentStage, String arduinoIp, int arduinoPort, int cameraPort, String cameraIp) {
-        super(parentStage, arduinoIp, arduinoPort, cameraPort, cameraIp);
+    public SemiAutoMode(String arduinoIp, int arduinoPort, int cameraPort, String cameraIp) {
+        super(arduinoIp, arduinoPort, cameraPort, cameraIp);
     }
 
     @Override

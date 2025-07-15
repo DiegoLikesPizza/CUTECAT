@@ -1,89 +1,89 @@
 package com.CUTECAT.app;
 
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.animation.RotateTransition;
+import javafx.util.Duration;
 
-/**
- * Custom title bar for the application windows.
- * Provides minimize and close buttons, and allows dragging the window.
- */
 public class CustomTitleBar extends HBox {
-    
     private double xOffset = 0;
     private double yOffset = 0;
-    
-    /**
-     * Creates a new custom title bar.
-     * 
-     * @param stage The stage (window) this title bar belongs to
-     * @param title The title text to display
-     */
-    public CustomTitleBar(Stage stage, String title) {
-        super();
-        
-        this.setPadding(new Insets(5, 10, 5, 10));
-        this.setAlignment(Pos.CENTER_LEFT);
-        this.getStyleClass().add("title-bar");
-        
-        // Make the title bar draggable
-        this.setOnMousePressed(event -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
-        });
-        
-        this.setOnMouseDragged(event -> {
-            stage.setX(event.getScreenX() - xOffset);
-            stage.setY(event.getScreenY() - yOffset);
-        });
-        
-        // Title label
-        Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("title-bar-label");
-        
+
+    public CustomTitleBar(Stage stage) {
+        setAlignment(Pos.CENTER_LEFT);
+        setPrefHeight(40);
+        getStyleClass().add("title-bar");
+
+        // Title
+        Label title = new Label("CUTECAT");
+        title.getStyleClass().add("window-title");
+
         // Spacer
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        
-        // Minimize button
-        Button minimizeButton = createImageButton("/images/minimize.png", e -> stage.setIconified(true));
-        minimizeButton.getStyleClass().add("title-bar-button");
-        
-        // Close button
-        Button closeButton = createImageButton("/images/close.png", e -> stage.close());
-        closeButton.getStyleClass().add("title-bar-button");
-        
-        this.getChildren().addAll(titleLabel, spacer, minimizeButton, closeButton);
+
+        // Window controls
+        Button minimizeBtn = createWindowButton("/images/minimize.png", "minimize-button", e -> stage.setIconified(true), false);
+
+        Button closeBtn = createWindowButton("/images/close.png", "close-button", e -> stage.close(), true);
+
+        HBox windowControls = new HBox(minimizeBtn, closeBtn);
+        windowControls.getStyleClass().add("window-controls");
+
+        getChildren().addAll(title, spacer, windowControls);
+
+        // Window dragging
+        setOnMousePressed(event -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+
+        setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
+        });
     }
-    
-    /**
-     * Creates a button with an image.
-     * 
-     * @param imagePath The path to the image resource
-     * @param action The action to perform when the button is clicked
-     * @return The created button
-     */
-    private Button createImageButton(String imagePath, javafx.event.EventHandler<javafx.event.ActionEvent> action) {
+
+    private Button createWindowButton(String imagePath, String styleClass, javafx.event.EventHandler<javafx.event.ActionEvent> action, Boolean rotation) {
         Button button = new Button();
-        
+        ImageView imageView = null;
+
+        // Load image
         try {
             Image image = new Image(getClass().getResourceAsStream(imagePath));
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(12);
+            imageView = new ImageView(image);
             imageView.setFitWidth(12);
+            imageView.setFitHeight(12);
             button.setGraphic(imageView);
         } catch (Exception e) {
-            button.setText(imagePath.contains("close") ? "X" : "_");
+            // Fallback to text if image loading fails
+            button.setText(styleClass.equals("close-button") ? "×" :
+                    styleClass.equals("minimize-button") ? "−" : "□");
         }
-        
+
+        button.getStyleClass().add(styleClass);
         button.setOnAction(action);
+
+        // Add rotation effect on hover only for the ImageView
+        if (imageView != null && rotation) {
+            ImageView finalImageView = imageView;
+            RotateTransition rotateTransition = new RotateTransition(Duration.millis(200), finalImageView);
+            rotateTransition.setByAngle(180);
+
+            button.setOnMouseEntered(e -> rotateTransition.play());
+            button.setOnMouseExited(e -> {
+                rotateTransition.stop();
+                finalImageView.setRotate(0);
+            });
+        }
+
         return button;
     }
 }
