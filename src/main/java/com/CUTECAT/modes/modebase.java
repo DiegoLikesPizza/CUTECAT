@@ -149,7 +149,7 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
         contentPane.setLeft(controlsContainer);
 
         // Add camera pane to the right side of the content pane
-        contentPane.setRight(cameraPane);
+        //contentPane.setRight(cameraPane);
 
         // Add status label at the bottom
         statusLabel = new Label("Status: Ready");

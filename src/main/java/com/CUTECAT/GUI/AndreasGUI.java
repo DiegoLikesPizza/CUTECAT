@@ -119,7 +119,7 @@ public class AndreasGUI {
     }
 
     //Ferngesteuerter Modus
-    public static void addWidgets2(Pane content2, ImageView camera, modebase mode) {
+    public void addWidgets2(Pane content2, ImageView camera) {
 
 
         Label Label2a = new Label("Ferngesteuerter Modus");
@@ -368,7 +368,7 @@ public class AndreasGUI {
     }
 
     //Halbautomatischer Modus
-    public static void addWidgets3(Pane content3, ImageView camera2) {
+    public void addWidgets3(Pane content3, ImageView camera2) {
         //Headline
         Label Label3a = new Label("Halbautomatischer Modus");
         Label3a.getStyleClass().add("styled-titel");
@@ -558,7 +558,7 @@ public class AndreasGUI {
 
 
     //Vollautomatischer Modus
-    public static void addWidgets4(Pane content4, ImageView camera3) {
+    public void addWidgets4(Pane content4, ImageView camera3) {
         //Headline
         Label Label4a = new Label("Vollautomatischer Modus");
         Label4a.getStyleClass().add("styled-titel");

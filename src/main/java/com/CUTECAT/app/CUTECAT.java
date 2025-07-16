@@ -40,7 +40,7 @@ import java.net.URL;
 
 public class CUTECAT extends Application {
 
-    private static final String ARDUINO_IP = "172.16.11.181";
+    private static final String ARDUINO_IP = "172.16.11.156";
     private static final int ARDUINO_PORT = 81;
     private static final int CAMERA_PORT = 81;
     private static final String CAMERA_IP = "172.16.11.207";
@@ -124,11 +124,35 @@ public class CUTECAT extends Application {
         ManualMode manualMode = new ManualMode( ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = manualMode;
 
+
+        AndreasGUI gui1 = new AndreasGUI(manualMode);
+        gui1.addWidgets2(content2, camera );
+
+        /*SemiAutoMode semiMode = new SemiAutoMode(ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        if (currentMode != null) {
+            currentMode.shutdown();
+        }
+        // Create and show the new mode
+        if(selectedTab =
+        currentMode = semiMode;
+        AndreasGUI gui2 = new AndreasGUI(semiMode);
+        gui2.addWidgets3(content3,camera2);
+
+        AutoMode autoMode = new AutoMode(ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        if (currentMode != null) {
+            currentMode.shutdown();
+        }
+        // Create and show the new mode
+        currentMode = autoMode;
+        AndreasGUI gui3 = new AndreasGUI(autoMode);
+        gui3.addWidgets3(content4,camera3);*/
+
+
         // Add widgets
         AndreasGUI.addWidgets(content);
-        AndreasGUI.addWidgets2(content2, camera, manualMode);
-        AndreasGUI.addWidgets3(content3, camera2);
-        AndreasGUI.addWidgets4(content4, camera3);
+        //AndreasGUI.addWidgets2(content2, camera, manualMode);
+        //AndreasGUI.addWidgets3(content3, camera2);
+        //AndreasGUI.addWidgets4(content4, camera3);
 
 
 
@@ -162,11 +186,31 @@ public class CUTECAT extends Application {
         tab4.setClosable(false);
         tabPane.getStyleClass().add("visible-tab-close-button");
 
-        tabPane.getTabs().addAll(tab1,   tab2, tab3, tab4);
+        //tabPane.getTabs().addAll(tab1,   tab2, tab3, tab4);
 
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
 
+        /*SemiAutoMode semiMode = new SemiAutoMode(ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        if (currentMode != null) {
+            currentMode.shutdown();
+        }
+        // Create and show the new mode
+        if(selectedTab == tab3){
+                currentMode = semiMode;}
+        AndreasGUI gui2 = new AndreasGUI(semiMode);
+        gui2.addWidgets3(content3,camera2);
 
+        AutoMode autoMode = new AutoMode(ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
+        if (currentMode != null) {
+            currentMode.shutdown();
+        }
+        // Create and show the new mode
+        if(selectedTab==tab4){
+        currentMode = autoMode;}
+        AndreasGUI gui3 = new AndreasGUI(autoMode);
+        gui3.addWidgets3(content4,camera3);*/
+
+        tabPane.getTabs().addAll(tab1,   tab2, tab3, tab4);
         /*tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
             @Override
             public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
@@ -214,6 +258,7 @@ public class CUTECAT extends Application {
         //setRoundedCorners(root, 10, 10);
 
         primaryStage.show();
+        manualMode.show();
 
         /*scene.setOnMouseClicked(e ->{
             if (Handlung) {
@@ -270,7 +315,7 @@ public class CUTECAT extends Application {
         // Create and show the new mode
         ManualMode manualMode = new ManualMode( ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         currentMode = manualMode;
-        //manualMode.show();
+        manualMode.show();
     }
 
     /**
