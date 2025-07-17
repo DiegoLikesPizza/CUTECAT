@@ -22,10 +22,10 @@ import java.net.URL;
 
 public class AndreasGUI {
 
-    private modebase modeInstance;
+    /*private modebase modeInstance;
     public AndreasGUI(modebase modeInstance) {
         this.modeInstance = modeInstance;
-    }
+    }*/
     @FXML
     public ImageView cameraView;
     public Thread mjpegThread;
@@ -47,7 +47,7 @@ public class AndreasGUI {
     }}
 
 
-    public static void addWidgets(Pane content) {
+    public void addWidgets(Pane content) {
 
 
 
@@ -119,8 +119,10 @@ public class AndreasGUI {
     }
 
     //Ferngesteuerter Modus
-    public void addWidgets2(Pane content2, ImageView camera) {
+    public void addWidgets2(Pane content2, ImageView camera,modebase mode) {
 
+        //double distance = mode.getTargetDistance();
+        double rotation = mode.controlValues[8];
 
         Label Label2a = new Label("Ferngesteuerter Modus");
         Label2a.getStyleClass().add("styled-titel");
@@ -165,7 +167,17 @@ public class AndreasGUI {
 
         //Wertangabe
         Label Label2c2 = new Label();
-        Label2c2.setText("30");
+
+        Timeline timeline1 = new Timeline(
+                new KeyFrame(Duration.seconds(0.5), e -> {
+
+                    double distance = mode.controlValues[8];
+                    Label2c2.setText(String.format("%.1f", distance));
+                })
+        );
+        timeline1.setCycleCount(Timeline.INDEFINITE);
+        timeline1.play();
+        Label2c2.setText(String.valueOf(rotation));
         Label2c2.getStyleClass().add("styled-label-a");
         Label2c2.setMinWidth(100);
         Label2c2.setMaxWidth(100);
@@ -247,17 +259,17 @@ public class AndreasGUI {
                 Label2f);
 
         Label Label2f2 = new Label();
-        /*Timeline timeline = new Timeline(
+        Timeline timeline = new Timeline(
         new KeyFrame(Duration.seconds(0.5), e -> {
 
-            double distance = modeInstance.getTargetDistance();
+            double distance = mode.getTargetDistance();
             Label2f2.setText(String.format("%.1f", distance));
         })
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();*/
+        timeline.play();
         //Wertangabe
-        Label2f2.setText("30");
+        //Label2f2.setText(String.valueOf(distance));
         Label2f2.getStyleClass().add("styled-label-a");
         Label2f2.setMinWidth(100);
         Label2f2.setMaxWidth(100);

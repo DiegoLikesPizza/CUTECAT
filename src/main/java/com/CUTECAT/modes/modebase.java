@@ -53,7 +53,7 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
     protected TitledPane cameraPane;
 
     // Vehicle state
-    protected int[] controlValues;
+    public int[] controlValues;
     protected static final int MOTOR1_DIR = 0;
     protected static final int MOTOR1_POWER = 1;
     protected static final int MOTOR2_DIR = 2;
@@ -208,13 +208,13 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
             } else if (event.getCode() == KeyCode.D) {
                 isRightPressed = true;
                 turnRight(45);
-            } else if (event.getCode() == KeyCode.UP) {
+            } else if (event.getCode() == KeyCode.I) {
                 adjustBarrel(Math.min(controlValues[BARREL_SERVO] + 5, 180));
-            } else if (event.getCode() == KeyCode.DOWN) {
+            } else if (event.getCode() == KeyCode.K) {
                 adjustBarrel(Math.max(controlValues[BARREL_SERVO] - 5, 0));
-            } else if (event.getCode() == KeyCode.LEFT) {
+            } else if (event.getCode() == KeyCode.J) {
                 rotateTurret(Math.max(controlValues[TURRET_SERVO] - 5, 0));
-            } else if (event.getCode() == KeyCode.RIGHT) {
+            } else if (event.getCode() == KeyCode.L) {
                 rotateTurret(Math.min(controlValues[TURRET_SERVO] + 5, 180));
             } else if (event.getCode() == KeyCode.SPACE) {
                 shoot();
@@ -243,7 +243,7 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
      */
     protected void startControlLoop() {
         executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(this::sendControlValues, 0, 100, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(this::sendControlValues, 0, 500, TimeUnit.MILLISECONDS);
 
         // Add shutdown hook to stop the executor when the application exits
         stage.setOnCloseRequest(event -> {

@@ -125,8 +125,11 @@ public class CUTECAT extends Application {
         currentMode = manualMode;
 
 
-        AndreasGUI gui1 = new AndreasGUI(manualMode);
-        gui1.addWidgets2(content2, camera );
+        AndreasGUI gui1 = new AndreasGUI();
+        gui1.addWidgets(content);
+        gui1.addWidgets2(content2, camera, new ManualMode( ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP) );
+        gui1.addWidgets3(content3, camera2);
+        gui1.addWidgets4(content4, camera3);
 
         /*SemiAutoMode semiMode = new SemiAutoMode(ARDUINO_IP, ARDUINO_PORT, CAMERA_PORT, CAMERA_IP);
         if (currentMode != null) {
@@ -149,7 +152,7 @@ public class CUTECAT extends Application {
 
 
         // Add widgets
-        AndreasGUI.addWidgets(content);
+        //AndreasGUI.addWidgets(content);
         //AndreasGUI.addWidgets2(content2, camera, manualMode);
         //AndreasGUI.addWidgets3(content3, camera2);
         //AndreasGUI.addWidgets4(content4, camera3);
