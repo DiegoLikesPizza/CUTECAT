@@ -313,7 +313,7 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
             Platform.runLater(() -> {
                 if (success) {
                     statusLabel.setText("Status: Connected - Sending commands");
-                    System.out.println("Successfully sent data to Arduino");
+                    System.out.println("Successfully sent data(" + csvData + ") to Arduino");
                 } else {
                     statusLabel.setText("Status: Connection error - Check Arduino and network");
                     System.out.println("Failed to send data to Arduino - Connection error");
