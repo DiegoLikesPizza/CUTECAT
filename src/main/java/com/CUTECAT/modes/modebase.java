@@ -243,7 +243,7 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
      */
     protected void startControlLoop() {
         executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(this::sendControlValues, 0, 500, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(this::sendControlValues, 0, 50, TimeUnit.MILLISECONDS);
 
         // Add shutdown hook to stop the executor when the application exits
         stage.setOnCloseRequest(event -> {
