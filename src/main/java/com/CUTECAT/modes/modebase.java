@@ -76,6 +76,8 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
 
     // Background tasks
     protected ScheduledExecutorService executor;
+    // Last sent data to compare to new data
+    private String lastSentCsv = "";
 
     /**
      * Creates a new mode instance.
