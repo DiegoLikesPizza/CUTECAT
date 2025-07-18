@@ -298,6 +298,15 @@ public abstract class modebase implements MovementCapable, ShootingCapable, Targ
 
             String csvData = toCsv(list);
 
+            // Prüfen, ob Daten gleich geblieben sind
+            if (csvData.equals(lastSentCsv)) {
+                //System.out.println("Same Data: " + csvData + " -> Not sent");
+                return; // Nichts hat sich geändert, also abbrechen
+            }
+            else{
+                lastSentCsv = csvData;
+            }
+
             System.out.println("Sending data to Arduino at " + arduinoIp + ":" + arduinoPort + " - Data: " + csvData);
             boolean success = DiegoArdUtils.sendToArduino(arduinoIp, arduinoPort, csvData);
 
